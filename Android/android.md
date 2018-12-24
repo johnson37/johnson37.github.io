@@ -23,7 +23,7 @@
 - Put the png pic to the related document directory:  app/src/main/res/
 - AndroidManfest.xml: android:icon="@mipmap/theme"
 
-### Get the permission
+#### Get the permission
 ```java
       public int REQUESTCODE =10;
       private String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.INTERNET};
@@ -53,6 +53,21 @@
     }
 ```
 
+#### Toast
+```java
+Toast.makeText(this, "O, we are given the permission", Toast.LENGTH_SHORT).show();
+```
+#### VideoView
+```java
+        videoview = (VideoView)findViewById(R.id.videoView);
+        //String path = Environment.getExternalStorageDirectory().getPath()+"/demo.mp4";
+        Uri uri = Uri.parse("https://johnson37.github.io./demo.mp4");
+        //Uri uri = Uri.parse(path);
+        videoview.setMediaController(new MediaController(this));
+        videoview.setVideoURI(uri);
+        videoview.requestFocus();
+        videoview.start();
+```
 #### RadioGroup
 ```java
         RadioGroup mRadioGroup = (RadioGroup)findViewById(R.id.radiogroup);
