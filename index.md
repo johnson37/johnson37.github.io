@@ -1,4 +1,4 @@
-# Embrace the world, Embrace the change - Johnson
+# Embrace the change - Johnson
 ## Recent PLAN
 ## Work
 - Opensource Reading
