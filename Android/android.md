@@ -23,6 +23,9 @@
 - Put the png pic to the related document directory:  app/src/main/res/
 - AndroidManfest.xml: android:icon="@mipmap/theme"
 
+#### Rotate the Screen
+<activity android:name=".VideoActivity" android:screenOrientation="sensor">
+
 #### Get the permission
 ```java
       public int REQUESTCODE =10;
