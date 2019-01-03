@@ -50,7 +50,7 @@ return render(request, 'hello.html', context)
     </form>    
 ```
 
-```Python
+```python
 
 def search(request):  
     request.encoding='utf-8'
@@ -63,7 +63,7 @@ def search(request):
 
 ```
 
-```Python
+```python
 @csrf_exempt
 def login_post(request):                                                                                             
     ctx = {}                                                                                                         
