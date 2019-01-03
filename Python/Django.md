@@ -131,7 +131,7 @@ In Root Directory, add one new directory **static**, put all cs/js in this direc
 
 HTML Part
 ```html
-    {% load staticfiles %}                                                                                           
+    load staticfiles                                                                                          
     <link rel="stylesheet" href="{% static 'blog/css/index.css' %}" type="text/css"/>    
 ```
 
