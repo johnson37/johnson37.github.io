@@ -87,19 +87,19 @@ admin.site.register(WebLogin)
 
 ### DB
 - Create one DB Class, 
-```Python
+```python
 class WebLogin(models.Model):                                                                                        
     name = models.CharField(max_length=20)                                                                           
     passwd = models.CharField(max_length=20)    
 ```
 
-```Python
+```python
 def write_db(new_name, new_passwd):                                                                                  
     print("Enter Write DB, name is "+new_name+" passwd is "+ new_passwd )                                            
     login = WebLogin(name=new_name, passwd= new_passwd)                                                              
     login.save()     
 ```
-```Python
+```python
 def read_all_db():                                                                                                   
     print("Enter read_all_db")                                                                                       
     response = ""                                                                                                    
@@ -109,7 +109,7 @@ def read_all_db():
     print (response)  
 ```
 
-```Python
+```python
 def testdb(request):
     # 修改其中一个id=1的name字段，再save，相当于SQL中的UPDATE
     test1 = Test.objects.get(id=1)
