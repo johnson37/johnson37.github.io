@@ -34,7 +34,7 @@ void sched_init(void)
 
 ```
 
-```
+```x86asm
 _system_call:
 	...
 	...
