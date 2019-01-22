@@ -2,7 +2,7 @@
 ## Recent PLAN
 - [Android-In progress](./Android/in_progress.md)
 - [Python Django- In progress](./Python/Django.md)
-- [Opensource - In progress](./Linux/opensource.md)
+- [Opensource - In progress](./Opensource/opensource.md)
 ## Work
 - [Opensource Reading](./work/work.md)
 - [Android](./Android/android.md)
