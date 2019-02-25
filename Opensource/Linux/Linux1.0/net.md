@@ -228,3 +228,181 @@ int rt_ioctl(unsigned int cmd, void *arg)
 }
 ```
 ## Route
+### Route command
+
+- route add -net 192.168.4.0 netmask 255.255.255.0 gw 192.168.1.1
+- route add -net 192.168.4.0 netmask 255.255.255.0 pon_d4097
+- route add default gw 192.168.1.10
+- route del default gw 192.168.1.10
+
+```c
+static int rt_new(struct rtentry *r)
+{
+
+	if ((devname = r->rt_dev) != NULL) {
+		err = getname(devname, &devname);
+		if (err)
+			return err;
+		dev = dev_get(devname);
+		putname(devname);
+		if (!dev)
+			return -EINVAL;
+	}
+	...
+	flags = r->rt_flags;
+	daddr = ((struct sockaddr_in *) &r->rt_dst)->sin_addr.s_addr;
+	mask = ((struct sockaddr_in *) &r->rt_genmask)->sin_addr.s_addr;
+	gw = ((struct sockaddr_in *) &r->rt_gateway)->sin_addr.s_addr;
+	...
+	rt_add(flags, daddr, mask, gw, dev);
+	return 0;
+}
+
+void rt_add(short flags, unsigned long dst, unsigned long mask,
+	unsigned long gw, struct device *dev)
+{
+	...
+	/* Allocate an entry. */
+	rt = (struct rtable *) kmalloc(sizeof(struct rtable), GFP_ATOMIC);
+	if (rt == NULL) {
+		DPRINTF((DBG_RT, "RT: no memory for new route!\n"));
+		return;
+	}
+	memset(rt, 0, sizeof(struct rtable));
+	rt->rt_flags = flags | RTF_UP;
+	rt->rt_dst = dst;
+	rt->rt_dev = dev;
+	rt->rt_gateway = gw;
+	rt->rt_mask = mask;
+	rt->rt_mtu = dev->mtu;
+	rt_print(rt);
+	/*
+	 * What we have to do is loop though this until we have
+	 * found the first address which has a higher generality than
+	 * the one in rt.  Then we can put rt in right before it.
+	 */
+	save_flags(cpuflags);
+	cli();
+	/* remove old route if we are getting a duplicate. */
+	rp = &rt_base;
+	while ((r = *rp) != NULL) {
+		if (r->rt_dst != dst) {
+			rp = &r->rt_next;
+			continue;
+		}
+		*rp = r->rt_next;
+		if (rt_loopback == r)
+			rt_loopback = NULL;
+		kfree_s(r, sizeof(struct rtable));
+	}
+	/* add the new route */
+	rp = &rt_base;
+	while ((r = *rp) != NULL) {
+		if ((r->rt_mask & mask) != mask)
+			break;
+		rp = &r->rt_next;
+	}
+	rt->rt_next = r;
+	*rp = rt;
+	if (rt->rt_dev->flags & IFF_LOOPBACK)
+		rt_loopback = rt;
+	restore_flags(cpuflags);
+	return;
+}
+
+// Delete one route rule
+
+static int rt_kill(struct rtentry *r)
+{
+	struct sockaddr_in *trg;
+
+	trg = (struct sockaddr_in *) &r->rt_dst;
+	rt_del(trg->sin_addr.s_addr);
+	return 0;
+}
+
+static void rt_del(unsigned long dst)
+{
+	struct rtable *r, **rp;
+	unsigned long flags;
+
+	DPRINTF((DBG_RT, "RT: flushing for dst %s\n", in_ntoa(dst)));
+	rp = &rt_base;
+	save_flags(flags);
+	cli();
+	while((r = *rp) != NULL) {
+		if (r->rt_dst != dst) {
+			rp = &r->rt_next;
+			continue;
+		}
+		*rp = r->rt_next;
+		if (rt_loopback == r)
+			rt_loopback = NULL;
+		kfree_s(r, sizeof(struct rtable));
+	} 
+	restore_flags(flags);
+}
+
+```
+
+Below part aims to make use of Route table to help to find the destination.
+
+In two scenairos, we need the Route table to find us find the destination.
+- 多网卡情况下，一个网卡的报文需要通过三层转发到另外一个网卡。
+- 多网卡情况下，本机要发送的报文在三层需要通过路由模块找到合适的出口。
+
+```c
+static void
+ip_forward(struct sk_buff *skb, struct device *dev, int is_frag)
+{
+	rt = rt_route(iph->daddr, NULL);
+}
+
+int
+ip_build_header(struct sk_buff *skb, unsigned long saddr, unsigned long daddr,
+		struct device **dev, int type, struct options *opt, int len, int tos, int ttl)
+{
+	...
+	if (*dev == NULL) {
+	rt = rt_route(daddr, &optmem);
+	if (rt == NULL) 
+		return(-ENETUNREACH);
+
+	*dev = rt->rt_dev;
+	if (saddr == 0x0100007FL && daddr != 0x0100007FL) 
+		saddr = rt->rt_dev->pa_addr;
+	raddr = rt->rt_gateway;
+
+	DPRINTF((DBG_IP, "ip_build_header: saddr set to %s\n", in_ntoa(saddr)));
+	opt = &optmem;
+  } else {
+	/* We still need the address of the first hop. */
+	rt = rt_route(daddr, &optmem);
+	raddr = (rt == NULL) ? 0 : rt->rt_gateway;
+  }
+  ...
+}
+```
+```c
+struct rtable * rt_route(unsigned long daddr, struct options *opt)
+{
+	struct rtable *rt;
+
+	for (rt = rt_base; rt != NULL || early_out ; rt = rt->rt_next) {
+		if (!((rt->rt_dst ^ daddr) & rt->rt_mask))
+			break;
+		/* broadcast addresses can be special cases.. */
+		if ((rt->rt_dev->flags & IFF_BROADCAST) &&
+		     rt->rt_dev->pa_brdaddr == daddr)
+			break;
+	}
+	if (daddr == rt->rt_dev->pa_addr) {
+		if ((rt = rt_loopback) == NULL)
+			goto no_route;
+	}
+	rt->rt_use++;
+	return rt;
+no_route:
+	return NULL;
+}
+```
