@@ -406,3 +406,207 @@ no_route:
 	return NULL;
 }
 ```
+
+## ARP
+```c
+
+static int
+udp_send(struct sock *sk, struct sockaddr_in *sin,
+	 unsigned char *from, int len)
+{
+  tmp = sk->prot->build_header(skb, saddr, sin->sin_addr.s_addr,
+			       &dev, IPPROTO_UDP, sk->opt, skb->mem_len,sk->ip_tos,sk->ip_ttl);
+  sk->prot->queue_xmit(sk, dev, skb, 1);
+  
+  return (len);
+}
+
+
+static int
+ip_send(struct sk_buff *skb, unsigned long daddr, int len, struct device *dev,
+	unsigned long saddr)
+{
+  unsigned char *ptr;
+  int mac;
+
+  ptr = skb->data;
+  mac = 0;
+  skb->arp = 1;
+  if (dev->hard_header) {
+	mac = dev->hard_header(ptr, dev, ETH_P_IP, daddr, saddr, len);
+  }
+  if (mac < 0) {
+	mac = -mac;
+	skb->arp = 0;
+  }
+  skb->dev = dev;
+  return(mac);
+}
+int
+ip_build_header(struct sk_buff *skb, unsigned long saddr, unsigned long daddr,
+		struct device **dev, int type, struct options *opt, int len, int tos, int ttl)
+{
+	// First Step: we need to get the route table to find the interface which we will make use of to send the frame.
+	rt = rt_route(daddr, &optmem);
+	raddr = (rt == NULL) ? 0 : rt->rt_gateway;
+	
+	// Second Step: we need to build MAC header, dstintaion MAC  
+    tmp = ip_send(skb, raddr, len, *dev, saddr);
+	
+}
+
+static int
+ip_send(struct sk_buff *skb, unsigned long daddr, int len, struct device *dev,
+	unsigned long saddr)
+{
+  unsigned char *ptr;
+  int mac;
+
+  ptr = skb->data;
+  mac = 0;
+  skb->arp = 1;
+  if (dev->hard_header) {
+	mac = dev->hard_header(ptr, dev, ETH_P_IP, daddr, saddr, len);
+  }
+  //If mac < 0. it means we find no arp entry, will send arp request to get it.
+  if (mac < 0) {
+	mac = -mac;
+	skb->arp = 0;
+  }
+  skb->dev = dev;
+  return(mac);
+}
+
+int
+eth_header(unsigned char *buff, struct device *dev, unsigned short type,
+	   unsigned long daddr, unsigned long saddr, unsigned len)
+{
+	
+  memcpy(eth->h_source, &saddr, 4);
+  /* No. Ask ARP to resolve the Ethernet address. */
+  if (arp_find(eth->h_dest, daddr, dev, dev->pa_addr)) 
+  {
+        sti();
+        if(type!=ETH_P_IP)
+        	printk("Erk: protocol %X got into an arp request state!\n",type);
+	return(-dev->hard_header_len);
+  } 
+  else
+  {
+    //Find the arp entry
+  	memcpy(eth->h_source,dev->dev_addr,dev->addr_len);	/* This was missing causing chaos if the
+  								   header built correctly! */
+  	sti();
+  	return(dev->hard_header_len);
+  }
+}
+
+
+
+```
+
+**Note : In arp related thing, we will met some packets wait for dst mac**
+```c
+int
+arp_rcv(struct sk_buff *skb, struct device *dev, struct packet_type *pt)
+{
+  //Check this arp accoring to the existing arp table.
+  tbl = arp_lookup(src);
+  if (tbl != NULL) {
+	DPRINTF((DBG_ARP, "ARP: udating entry for %s\n", in_ntoa(src)));
+	memcpy(tbl->ha, ptr, arp->ar_hln);
+	tbl->hlen = arp->ar_hln;
+	tbl->flags |= ATF_COM;
+	tbl->last_used = jiffies;
+  } else {
+	memcpy(&dst, ptr + (arp->ar_hln * 2) + arp->ar_pln, arp->ar_pln);
+	if (chk_addr(dst) != IS_MYADDR && arp_proxies == 0) {
+		kfree_skb(skb, FREE_READ);
+		return(0);
+	} else {
+		tbl = arp_create(src, ptr, arp->ar_hln, arp->ar_hrd);
+		if (tbl == NULL) {
+			kfree_skb(skb, FREE_READ);
+			return(0);
+		}
+	}
+  }
+  //After arp table updates, we need to check the blocking packets which wait for the dstination MAC.
+	arp_send_q();
+}
+
+static void
+arp_send_q(void)
+{
+  struct sk_buff *skb;
+  struct sk_buff *volatile work_q;
+  cli();
+  work_q = arp_q;
+  skb_new_list_head(&work_q);
+  arp_q = NULL;
+  sti();
+  while((skb=skb_dequeue(&work_q))!=NULL)
+  {
+  	IS_SKB(skb);
+	skb->magic = 0;
+	skb->next = NULL;
+	skb->prev = NULL;
+
+	/* Decrement the 'tries' counter. */
+	cli();
+	skb->tries--;
+	if (skb->tries == 0) {
+		/*
+		 * Grmpf.
+		 * We have tried ARP_MAX_TRIES to resolve the IP address
+		 * from this datagram.  This means that the machine does
+		 * not listen to our ARP requests.  Perhaps someone tur-
+		 * ned off the thing?
+		 * In any case, trying further is useless.  So, we kill
+		 * this packet from the queue.  (grinnik) -FvK
+		 */
+		skb->sk = NULL;
+		if(skb->free)
+			kfree_skb(skb, FREE_WRITE);
+			/* If free was 0, magic is now 0, next is 0 and 
+			   the write queue will notice and kill */
+		sti();
+		continue;
+	}
+
+	/* Can we now complete this packet? */
+	sti();
+	if (skb->arp || !skb->dev->rebuild_header(skb->data, skb->dev)) {
+		skb->arp  = 1;
+		skb->dev->queue_xmit(skb, skb->dev, 0);
+	} else {
+		/* Alas.  Re-queue it... */
+		skb->magic = ARP_QUEUE_MAGIC;      
+		skb_queue_head(&arp_q,skb);
+	}
+  }
+}
+
+
+dev_queue_xmit(struct sk_buff *skb, struct device *dev, int pri)
+{
+  // If the device is busy, return 1.
+  if (dev->hard_start_xmit(skb, dev) == 0) {
+	return;
+  }
+
+  /* Put skb into a bidirectional circular linked list. */
+  DPRINTF((DBG_DEV, "dev_queue_xmit dev->buffs[%d]=%X\n",
+					pri, dev->buffs[pri]));
+
+  /* Interrupts should already be cleared by hard_start_xmit. */
+  cli();
+  skb->magic = DEV_QUEUE_MAGIC;
+  if(where)
+  	skb_queue_head(&dev->buffs[pri],skb);
+  else
+  	skb_queue_tail(&dev->buffs[pri],skb);
+  skb->magic = DEV_QUEUE_MAGIC;
+}
+
+```
