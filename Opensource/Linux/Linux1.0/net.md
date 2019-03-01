@@ -451,6 +451,7 @@ ip_build_header(struct sk_buff *skb, unsigned long saddr, unsigned long daddr,
 	raddr = (rt == NULL) ? 0 : rt->rt_gateway;
 	
 	// Second Step: we need to build MAC header, dstintaion MAC  
+	// Note: In here, we want to get next hop's dstinatiom MAC. Next Hop, maybe it's one gateway, maybe it's dstination.
     tmp = ip_send(skb, raddr, len, *dev, saddr);
 	
 }
