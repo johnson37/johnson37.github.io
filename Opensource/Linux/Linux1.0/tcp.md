@@ -5,11 +5,17 @@
 - client 主动发起，发送SYNC
 - server 被动发起，收到client的SYNC, 发送SYNC+ACK
 - client 发送ACK，握手成功
+
 ![握手](./pic/handshake.png)
 
 ### TCP 4 times to wave
-- clinet 发起
+
 ![挥手](./pic/wave.jpg)
+
+- client 主动发起，发送FIN
+- Server response ack
+- server side send FIN
+- client side response ack
 
 ## Basic Usage for TCP Socket on Application Layer
 
