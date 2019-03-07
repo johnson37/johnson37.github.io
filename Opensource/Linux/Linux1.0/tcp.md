@@ -163,6 +163,7 @@ tcp_connect(struct sock *sk, struct sockaddr_in *usin, int addr_len)
 ```
 
 **Now in server side, we receive SYNC, and then we need to response TCP_CLIENT SYNC+ACK packet, and server's state change to TCP_SYN_RECV **
+
 ```c
 int
 tcp_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,                                                                                                                          
@@ -250,3 +251,4 @@ tcp_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,
 ```
 
 **In server side, we recieve the ack message , and change state from TCP_SYN_RECV to ESTABLISHED**
+
