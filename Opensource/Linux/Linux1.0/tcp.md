@@ -162,7 +162,7 @@ tcp_connect(struct sock *sk, struct sockaddr_in *usin, int addr_len)
 
 ```
 
-**Now in server side, we receive SYNC, and then we need to response TCP_CLIENT SYNC+ACK packet**
+**Now in server side, we receive SYNC, and then we need to response TCP_CLIENT SYNC+ACK packet, and server's state change to TCP_SYN_RECV **
 ```c
 int
 tcp_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,                                                                                                                          
@@ -187,6 +187,9 @@ tcp_conn_request(struct sock *sk, struct sk_buff *skb,
 {
 	tmp = sk->prot->build_header(buff, newsk->saddr, newsk->daddr, &dev,
                                  IPPROTO_TCP, NULL, MAX_SYN_SIZE, sk->ip_tos, sk->ip_ttl);
+
+	newsk->state = TCP_SYN_RECV;
+
 	t1->ack = 1;
 	t1->syn = 1;
 	
@@ -195,3 +198,55 @@ tcp_conn_request(struct sock *sk, struct sk_buff *skb,
 
 ```
 
+**Now in client side, we receive the SYNC+ACK, and send ack to server side. Note that, after TCP_SYN_SENT, we don't get one break, so we will enter TCP_SYN_RECV, and at last TCP_ESTABLISHED**
+
+```c
+int
+tcp_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,                                                                                                                          
+        unsigned long daddr, unsigned short len,
+        unsigned long saddr, int redo, struct inet_protocol * protocol)
+{
+    case TCP_SYN_SENT:
+        if (!tcp_ack(sk, th, saddr, len)) {
+                tcp_reset(daddr, saddr, th,
+                          sk->prot, opt, dev, sk->ip_tos, sk->ip_ttl);
+                kfree_skb(skb, FREE_READ);
+                release_sock(sk);
+                return (0);
+            }
+
+            /*
+             * If the syn bit is also set, switch to
+             * tcp_syn_recv, and then to established.
+             */
+            if (!th->syn) {
+                kfree_skb(skb, FREE_READ);
+                release_sock(sk);
+                return (0);
+            }
+
+            /* Ack the syn and fall through. */
+            sk->acked_seq = th->seq + 1;
+            sk->fin_seq = th->seq;
+            tcp_send_ack(sk->sent_seq, th->seq + 3,
+                         sk, th, sk->daddr);
+
+        case TCP_SYN_RECV:
+            if (!tcp_ack(sk, th, saddr, len)) {
+                tcp_reset(daddr, saddr, th,
+                          sk->prot, opt, dev, sk->ip_tos, sk->ip_ttl);
+                kfree_skb(skb, FREE_READ);
+                release_sock(sk);
+                return (0);
+            }
+            sk->state = TCP_ESTABLISHED;
+            tcp_options(sk, th);
+            sk->dummy_th.dest = th->source;
+            sk->copied_seq = sk->acked_seq - 1;
+            if (!sk->dead) {
+                sk->state_change(sk);
+            }
+}
+```
+
+**In server side, we recieve the ack message , and change state from TCP_SYN_RECV to ESTABLISHED**
