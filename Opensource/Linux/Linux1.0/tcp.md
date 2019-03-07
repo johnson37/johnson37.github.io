@@ -35,8 +35,60 @@
 
 ## Code Flow
 
-### Connect
+### Listen
+**Before tcp client connect tcp server, tcp server need to bind, listen & accept**
+**In Listen state,  we find tcp server 's socket state change from TCP_CLOSE to TCP_LISEN**
 
+```c
+static int 
+sock_listen(int fd, int backlog)
+{                                                                                                                                                                                              
+    struct socket *sock;    
+    
+    DPRINTF((net_debug, "NET: sock_listen: fd = %d\n", fd));
+    if (fd < 0 || fd >= NR_OPEN || current->filp[fd] == NULL)
+        return (-EBADF);
+    if (!(sock = sockfd_lookup(fd, NULL))) return (-ENOTSOCK);
+    if (sock->state != SS_UNCONNECTED) {
+        DPRINTF((net_debug, "NET: sock_listen: socket isn't unconnected\n"));
+        return (-EINVAL);
+    }   
+    if (sock->ops && sock->ops->listen) sock->ops->listen(sock, backlog);
+    sock->flags |= SO_ACCEPTCON;
+    return (0);
+}   
+
+inet_listen(struct socket *sock, int backlog)
+{
+    struct sock *sk;
+
+    sk = (struct sock *) sock->data;
+    if (sk == NULL) {
+        printk("Warning: sock->data = NULL: %d\n" , __LINE__);
+        return (0);
+    }
+
+    /* We may need to bind the socket. */
+    if (sk->num == 0) { 
+        sk->num = get_new_socknum(sk->prot, 0);
+        if (sk->num == 0) return (-EAGAIN);
+        put_sock(sk->num, sk);
+        sk->dummy_th.source = ntohs(sk->num);
+    }
+
+    /* We might as well re use these. */
+    sk->max_ack_backlog = backlog;
+    if (sk->state != TCP_LISTEN) {
+        sk->ack_backlog = 0;
+        sk->state = TCP_LISTEN;
+    }
+    return (0);                                                                                                                                                                                
+}
+
+```
+
+### Connect
+**In connect sys call, we will change sk->state from TCP_CLOSE to TCP_SYNC_SENT. we will wait until the state is not TCP_SYNC_SENT or TCP_SYNC_RECV**
 ```c
 asmlinkage int
 sys_socketcall(int call, unsigned long *args)
@@ -109,3 +161,37 @@ tcp_connect(struct sock *sk, struct sockaddr_in *usin, int addr_len)
 
 
 ```
+
+**Now in server side, we receive SYNC, and then we need to response TCP_CLIENT SYNC+ACK packet**
+```c
+int
+tcp_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,                                                                                                                          
+        unsigned long daddr, unsigned short len,
+        unsigned long saddr, int redo, struct inet_protocol * protocol)
+{
+	    switch (sk->state) {
+			case TCP_LISTEN:
+				if (th->syn) {
+					tcp_conn_request(sk, skb, daddr, saddr, opt, dev);
+					release_sock(sk);
+					return (0);
+				}
+		}
+		
+}
+
+static void
+tcp_conn_request(struct sock *sk, struct sk_buff *skb,
+                 unsigned long daddr, unsigned long saddr,
+                 struct options *opt, struct device *dev)
+{
+	tmp = sk->prot->build_header(buff, newsk->saddr, newsk->daddr, &dev,
+                                 IPPROTO_TCP, NULL, MAX_SYN_SIZE, sk->ip_tos, sk->ip_ttl);
+	t1->ack = 1;
+	t1->syn = 1;
+	
+	newsk->prot->queue_xmit(newsk, dev, buff, 0);
+}
+
+```
+
