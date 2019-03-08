@@ -271,3 +271,23 @@ tcp_send_ack(unsigned long sequence, unsigned long ack,
 ```
 
 **In server side, we recieve the ack message , and change state from TCP_SYN_RECV to ESTABLISHED**
+```c
+int
+tcp_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,
+        unsigned long daddr, unsigned short len,
+        unsigned long saddr, int redo, struct inet_protocol * protocol)
+{
+
+        case TCP_SYN_RECV:
+            if (!tcp_ack(sk, th, saddr, len)) {
+                tcp_reset(daddr, saddr, th,
+                          sk->prot, opt, dev, sk->ip_tos, sk->ip_ttl);
+                kfree_skb(skb, FREE_READ);
+                release_sock(sk);
+                return (0);
+            }
+            sk->state = TCP_ESTABLISHED;
+}
+```
+
+**Until here, both server side and client side enter ESTABLISH State**
