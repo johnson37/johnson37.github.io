@@ -162,7 +162,7 @@ tcp_connect(struct sock *sk, struct sockaddr_in *usin, int addr_len)
 
 ```
 
-**Now in server side, we receive SYNC, and then we need to response TCP_CLIENT SYNC+ACK packet, and server's state change to TCP_SYN_RECV**
+**Now in server side, we receive SYNC, and then we need to response TCP_CLIENT SYNC+ACK packet, and server state change to TCP_SYN_RECV**
 
 ```c
 int
