@@ -248,7 +248,26 @@ tcp_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,
                 sk->state_change(sk);
             }
 }
+
+static void
+tcp_send_ack(unsigned long sequence, unsigned long ack,
+             struct sock *sk,
+             struct tcphdr *th, unsigned long daddr)
+{
+    buff = sk->prot->wmalloc(sk, MAX_ACK_SIZE, 1, GFP_ATOMIC);
+    tmp = sk->prot->build_header(buff, sk->saddr, daddr, &dev,
+                                 IPPROTO_TCP, sk->opt, MAX_ACK_SIZE, sk->ip_tos, sk->ip_ttl);
+    t1->ack = 1;
+    t1->res1 = 0;
+    t1->res2 = 0;
+    t1->rst = 0;
+    t1->urg = 0;
+    t1->syn = 0;
+    t1->psh = 0;
+    t1->fin = 0;
+    sk->prot->queue_xmit(sk, dev, buff, 1);	
+}
+
 ```
 
 **In server side, we recieve the ack message , and change state from TCP_SYN_RECV to ESTABLISHED**
-
