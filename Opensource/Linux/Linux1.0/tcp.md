@@ -291,3 +291,24 @@ tcp_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,
 ```
 
 **Until here, both server side and client side enter ESTABLISH State**
+
+
+```c
+void
+sock_close(struct inode *inode, struct file *file)
+{
+    struct socket *sock;
+
+    DPRINTF((net_debug, "NET: sock_close: inode=0x%x (cnt=%d)\n",
+             inode, inode->i_count));
+
+    /* It's possible the inode is NULL if we're closing an unfinished socket. */
+    if (!inode) return;
+    if (!(sock = socki_lookup(inode))) {
+        printk("NET: sock_close: can't find socket for inode!\n");
+        return;
+    }
+    sock_release(sock);
+}
+
+```
