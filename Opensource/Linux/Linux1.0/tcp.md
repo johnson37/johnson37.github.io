@@ -322,12 +322,7 @@ inet_release(struct socket *sock, struct socket *peer)
             interruptible_sleep_on(sk->sleep);
             if (current->signal & ~current->blocked) {
                 break;
-#if 0
-                /* not working now - closes can't be restarted */
-                sti();
-                current->timeout = 0;
-                return (-ERESTARTSYS);
-#endif
+
             }
         }
         current->timeout = 0;                                                                                                                                                                  
@@ -335,10 +330,7 @@ inet_release(struct socket *sock, struct socket *peer)
         sk->dead = 1;
 
 }
-```
 
-
-```c
 static void
 tcp_close(struct sock *sk, int timeout)
 {
@@ -363,7 +355,9 @@ tcp_close(struct sock *sk, int timeout)
 }
 
 ```
-** In server side, we receive the FIN we will handle it and send the ack and change the state from ESTABLISH to TCP_CLOSE_WAIT **
+
+**In server side, we receive the FIN we will handle it and send the ack and change the state from ESTABLISH to TCP_CLOSE_WAIT**
+
 ```c
 int
 tcp_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,                                                                                                                          
@@ -413,7 +407,8 @@ tcp_fin(struct sock *sk, struct tcphdr *th,
 
 }
 ```
-** In client side we receive the ack and do not change state. It is a little different with Protocol Definition**
+
+**In client side we receive the ack and do not change state. It is a little different with Protocol Definition**
 ```c
 int
 tcp_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,                                                                                                                          
@@ -432,8 +427,7 @@ tcp_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,
 }
 ```
 
-** Here, Usually we need server side, manually close the fd, send FIN **
-
+**Here, Usually we need server side, manually close the fd, send FIN**
 ```c
 void
 sock_close(struct inode *inode, struct file *file)
@@ -503,8 +497,7 @@ tcp_close(struct sock *sk, int timeout)
 }
 ```
 
-** Client side receive the FIN and send the ack packet change state from TCP_FIN_WAIT1 to TCP_FIN_WAIT2 **
-** test **
+**Client side receive the FIN and send the ack packet change state from TCP_FIN_WAIT1 to TCP_FIN_WAIT2**
 ```c
 int
 tcp_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,
@@ -518,7 +511,7 @@ tcp_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,
             return (0);
         }
 
-	        /* Moved: you must do data then fin bit */
+	    /* Moved: you must do data then fin bit */
         if (th->fin && tcp_fin(sk, th, saddr, dev)) {
 			kfree_skb(skb, FREE_READ);
             release_sock(sk);
@@ -535,8 +528,6 @@ tcp_fin(struct sock *sk, struct tcphdr *th,
         sk->fin_seq = th->seq + 1;
         sk->state = TCP_FIN_WAIT2;
         break;
-
 }
 
 ```
-** hello **
