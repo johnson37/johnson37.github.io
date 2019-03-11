@@ -36,6 +36,7 @@
 ## Code Flow
 
 ### Listen
+
 **Before tcp client connect tcp server, tcp server need to bind, listen & accept**
 **In Listen state,  we find tcp server 's socket state change from TCP_CLOSE to TCP_LISEN**
 
@@ -199,7 +200,7 @@ tcp_conn_request(struct sock *sk, struct sk_buff *skb,
 
 ```
 
-**Now in client side, we receive the SYNC+ACK, and send ack to server side. Note that, after TCP_SYN_SENT, we don't get one break, so we will enter TCP_SYN_RECV, and at last TCP_ESTABLISHED**
+**Now in client side, we receive the SYNC+ACK, and send ack to server side. Note that, after TCP_SYN_SENT, we do not get one break, so we will enter TCP_SYN_RECV, and at last TCP_ESTABLISHED**
 
 ```c
 int
@@ -292,7 +293,7 @@ tcp_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,
 
 **Until here, both server side and client side enter ESTABLISH State**
 
-**Let's start to close the tcp socket. Client start to close fd. Client send FIN and change state from ESTABLISH to TCP_FIN_WAIT1**
+**Let us start to close the tcp socket. Client start to close fd. Client send FIN and change state from ESTABLISH to TCP_FIN_WAIT1**
 
 ```c
 void
@@ -416,7 +417,7 @@ tcp_fin(struct sock *sk, struct tcphdr *th,
 }
 ```
 
-**In client side, we receive the ack and don't change state. It is a little different with Protocol Definition **
+** In client side, we receive the ack and do not change state. It is a little different with Protocol Definition **
 ```c
 int
 tcp_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,                                                                                                                          
@@ -435,7 +436,7 @@ tcp_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,
 }
 ```
 
-**Here, Usually we need server side, manually close the fd, send FIN **
+** Here, Usually we need server side, manually close the fd, send FIN **
 
 ```c
 void
@@ -507,6 +508,7 @@ tcp_close(struct sock *sk, int timeout)
 ```
 
 ** Client side receive the FIN ,and send the ack packet,  change state from TCP_FIN_WAIT1 to TCP_FIN_WAIT2 **
+
 ```c
 int
 tcp_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,
