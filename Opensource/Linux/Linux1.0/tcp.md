@@ -162,9 +162,7 @@ tcp_connect(struct sock *sk, struct sockaddr_in *usin, int addr_len)
 
 
 ```
-
 **Now in server side, we receive SYNC, and then we need to response TCP_CLIENT SYNC+ACK packet, and server state change to TCP_SYN_RECV**
-
 ```c
 int
 tcp_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,                                                                                                                          
@@ -365,8 +363,7 @@ tcp_close(struct sock *sk, int timeout)
 }
 
 ```
-
-** In server side, we receive the FIN, we will handle it , send the ack, and change the state from ESTABLISH to TCP_CLOSE_WAIT **
+** In server side, we receive the FIN we will handle it and send the ack and change the state from ESTABLISH to TCP_CLOSE_WAIT **
 ```c
 int
 tcp_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,                                                                                                                          
@@ -416,8 +413,7 @@ tcp_fin(struct sock *sk, struct tcphdr *th,
 
 }
 ```
-
-** In client side, we receive the ack and do not change state. It is a little different with Protocol Definition **
+** In client side we receive the ack and do not change state. It is a little different with Protocol Definition**
 ```c
 int
 tcp_rcv(struct sk_buff *skb, struct device *dev, struct options *opt,                                                                                                                          
@@ -507,7 +503,7 @@ tcp_close(struct sock *sk, int timeout)
 }
 ```
 
-** Client side receive the FIN ,and send the ack packet,  change state from TCP_FIN_WAIT1 to TCP_FIN_WAIT2 **
+** Client side receive the FIN and send the ack packet change state from TCP_FIN_WAIT1 to TCP_FIN_WAIT2 **
 
 ```c
 int
