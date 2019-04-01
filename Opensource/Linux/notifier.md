@@ -9,6 +9,7 @@ Notifier 是Linux 内核子模块之间的通讯机制。整个机制类似于�
 - 注册的时候会通过函数调用的方式，指明需要订阅的chain，以及事件发生后的回调函数。
 - 注册函数： notifier_chain_register
 - 取消注册：notifier_chain_unregister
+
 ```c
 int notifier_chain_register(struct notifier_block **list, struct notifier_block *n)                                                                                         
 { 
@@ -24,9 +25,6 @@ int notifier_chain_register(struct notifier_block **list, struct notifier_block 
     return 0;                  
 } 
 
-```
-
-```c
 int notifier_chain_unregister(struct notifier_block **nl, struct notifier_block *n)
 {
     write_lock(&notifier_lock);
