@@ -60,3 +60,52 @@ int register_netdevice(struct net_device *dev)
 	dev->wanted_features = dev->features & dev->hw_features;
 }
 ```
+
+### TCP send msg , net stack will choose the mss value according to gso
+
+```c
+int tcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
+{
+	mss_now = tcp_send_mss(sk, &size_goal, flags);
+}
+
+static int tcp_send_mss(struct sock *sk, int *size_goal, int flags)
+{
+	int mss_now;
+
+	mss_now = tcp_current_mss(sk);
+	*size_goal = tcp_xmit_size_goal(sk, mss_now, !(flags & MSG_OOB));
+
+	return mss_now;
+}
+static unsigned int tcp_xmit_size_goal(struct sock *sk, u32 mss_now,
+				       int large_allowed)
+{
+	struct tcp_sock *tp = tcp_sk(sk);
+	u32 new_size_goal, size_goal;
+
+	if (!large_allowed || !sk_can_gso(sk))
+		return mss_now;
+
+	/* Note : tcp_tso_autosize() will eventually split this later */
+	new_size_goal = sk->sk_gso_max_size - 1 - MAX_TCP_HEADER;
+	new_size_goal = tcp_bound_to_half_wnd(tp, new_size_goal);
+
+	/* We try hard to avoid divides here */
+	size_goal = tp->gso_segs * mss_now;
+	if (unlikely(new_size_goal < size_goal ||
+		     new_size_goal >= size_goal + mss_now)) {
+		tp->gso_segs = min_t(u16, new_size_goal / mss_now,
+				     sk->sk_gso_max_segs);
+		size_goal = tp->gso_segs * mss_now;
+	}
+
+	return max(size_goal, mss_now);
+}
+static inline bool net_gso_ok(netdev_features_t features, int gso_type)
+{
+	netdev_features_t feature = gso_type << NETIF_F_GSO_SHIFT;
+	
+	return (features & feature) == feature;
+}
+```
