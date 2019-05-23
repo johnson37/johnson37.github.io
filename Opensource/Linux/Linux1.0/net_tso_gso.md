@@ -109,3 +109,32 @@ static inline bool net_gso_ok(netdev_features_t features, int gso_type)
 	return (features & feature) == feature;
 }
 ```
+
+### IP Level gso handle
+**In Ip Level, when TCP level send one large packet which is larger than the mss, IP level will check the gso flag to decide whether it will fragment it.**
+
+```c
+int ip_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+{
+	return NF_HOOK_COND(NFPROTO_IPV4, NF_INET_POST_ROUTING,
+			    net, sk, skb, NULL, dev,
+			    ip_finish_output,
+			    !(IPCB(skb)->flags & IPSKB_REROUTED));
+}
+
+// If skb support gso, we don't consider to fragment here.
+static int ip_finish_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+{
+	unsigned int mtu;
+
+	mtu = ip_skb_dst_mtu(skb);
+	if (skb_is_gso(skb))
+		return ip_finish_output_gso(net, sk, skb, mtu);
+
+	if (skb->len > mtu || (IPCB(skb)->flags & IPSKB_FRAG_PMTU))
+		return ip_fragment(net, sk, skb, mtu, ip_finish_output2);
+
+	return ip_finish_output2(net, sk, skb);
+}
+
+```
