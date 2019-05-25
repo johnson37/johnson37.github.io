@@ -181,7 +181,7 @@ int ip_output(struct net *net, struct sock *sk, struct sk_buff *skb)
 ### Code Flow
 
 #### Scenario, net interface is connected to one bridge, and the packet is for this device.
-**State change flow: NF_BR_BROUTING -->NF_BR_LOCAL_IN --> NF_BR_PRE_ROUTING **
+**State change flow: NF_BR_BROUTING -->NF_BR_LOCAL_IN --> NF_BR_PRE_ROUTING**
 ```c
 rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
 {
@@ -335,7 +335,7 @@ static void __br_deliver(const struct net_bridge_port *to, struct sk_buff *skb)
 ```
 
 #### Scenario, net interface is connected to one bridge, and the packet is not for this device.
-**State change flow: NF_BR_BROUTING -->NF_BR_FORWARD --> NF_BR_PRE_ROUTING **
+**State change flow: NF_BR_BROUTING -->NF_BR_FORWARD --> NF_BR_PRE_ROUTING**
 ```c
 rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
 {
