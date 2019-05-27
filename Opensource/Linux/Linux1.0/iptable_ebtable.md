@@ -13,6 +13,7 @@
 
 #### Net Interface does not connect with one bridge, and this packet is for this ONT.
 **Flow is NF_INET_PRE_ROUTING--> NF_INET_LOCAL_IN --> NF_INET_LOCAL_OUT --> NF_INET_POST_ROUTING**
+![localpacket_withoutbridge](./pic/localpacket_withoutbridge)
 ```c
 int ip_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_type *pt, struct net_device *orig_dev)
 {
@@ -105,6 +106,7 @@ int ip_output(struct net *net, struct sock *sk, struct sk_buff *skb)
 
 #### Net Interface does not connect with one bridge, and this packet is not for this ONT, which means we need to forward it.
 **Flow is NF_INET_PRE_ROUTING--> NF_INET_FORWARD --> NF_INET_POST_ROUTING**
+![remotepakcet_withoutbridge](./pic/remotepacket_withoutbridge)
 ```c
 int ip_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_type *pt, struct net_device *orig_dev)
 {
@@ -182,6 +184,7 @@ int ip_output(struct net *net, struct sock *sk, struct sk_buff *skb)
 
 #### Scenario, net interface is connected to one bridge, and the packet is for this device.
 **State change flow: NF_BR_BROUTING -->NF_BR_LOCAL_IN --> NF_BR_PRE_ROUTING**
+![localpacket_withbridge](./pic/localpacket_withbridge)
 ```c
 rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
 {
@@ -336,6 +339,7 @@ static void __br_deliver(const struct net_bridge_port *to, struct sk_buff *skb)
 
 #### Scenario, net interface is connected to one bridge, and the packet is not for this device.
 **State change flow: NF_BR_BROUTING -->NF_BR_FORWARD --> NF_BR_PRE_ROUTING**
+![remotepacket_withbridge](./pic/remotepacket_withbridge.jpg)
 ```c
 rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
 {
