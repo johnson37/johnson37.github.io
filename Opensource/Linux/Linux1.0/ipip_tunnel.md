@@ -2,10 +2,13 @@
 
 ## Basic Introduction
 IPIP tunnel is one tunnel technology. 
-![ipip_introduction](./pic/ipip_tunnel_intro.png)
+
+![ipip_introduction](./pic/ipip_tunnel_intro.PNG)
 
 ## Code Flow
-![ipip_flow](./pic/ipip_flow.png)
+
+![ipip_flow](./pic/ipip_flow.PNG)
+
 ```c
 static int __init tunnel4_init(void)                                                                                                                         
 {   
