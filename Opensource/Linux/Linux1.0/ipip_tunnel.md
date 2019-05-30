@@ -7,7 +7,7 @@ IPIP tunnel is one tunnel technology.
 
 ## Code Flow
 
-![ipip_flow](./pic/ipip_flow.PNG)
+![ipip_flow](./pic/ipip_tunnel.PNG)
 
 ```c
 static int __init tunnel4_init(void)                                                                                                                         
@@ -131,4 +131,97 @@ static int ipip_rcv(struct sk_buff *skb)
 }
 
       
+```
+
+```c
+static int __net_init ipip_init_net(struct net *net)
+{
+    struct ipip_net *ipn = net_generic(net, ipip_net_id);
+    int err;
+
+    ipn->tunnels[0] = ipn->tunnels_wc;
+    ipn->tunnels[1] = ipn->tunnels_l;
+    ipn->tunnels[2] = ipn->tunnels_r;
+    ipn->tunnels[3] = ipn->tunnels_r_l;
+
+    ipn->fb_tunnel_dev = alloc_netdev(sizeof(struct ip_tunnel),
+                       "tunl0",
+                       ipip_tunnel_setup);
+
+}
+
+
+static void ipip_tunnel_setup(struct net_device *dev)
+{
+    dev->netdev_ops     = &ipip_netdev_ops;
+    dev->destructor     = free_netdev;
+
+    dev->type       = ARPHRD_TUNNEL;
+    dev->hard_header_len    = LL_MAX_HEADER + sizeof(struct iphdr);
+    dev->mtu        = ETH_DATA_LEN - sizeof(struct iphdr);
+    dev->flags      = IFF_NOARP;
+    dev->iflink     = 0;
+    dev->addr_len       = 4;
+    dev->features       |= NETIF_F_NETNS_LOCAL;
+    dev->priv_flags     &= ~IFF_XMIT_DST_RELEASE;
+}
+
+static const struct net_device_ops ipip_netdev_ops = {                                                                                                                                       
+    .ndo_uninit = ipip_tunnel_uninit,
+    .ndo_start_xmit = ipip_tunnel_xmit,
+    .ndo_do_ioctl   = ipip_tunnel_ioctl,
+    .ndo_change_mtu = ipip_tunnel_change_mtu,
+
+};
+
+static netdev_tx_t ipip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev)
+{
+    skb->transport_header = skb->network_header;
+    skb_push(skb, sizeof(struct iphdr));
+    skb_reset_network_header(skb);
+    memset(&(IPCB(skb)->opt), 0, sizeof(IPCB(skb)->opt));
+    IPCB(skb)->flags &= ~(IPSKB_XFRM_TUNNEL_SIZE | IPSKB_XFRM_TRANSFORMED |
+                  IPSKB_REROUTED);
+    skb_dst_drop(skb);
+    skb_dst_set(skb, &rt->u.dst);
+
+    /*
+     *  Push down and install the IPIP header.
+     */
+
+    iph             =   ip_hdr(skb);
+    iph->version        =   4;
+    iph->ihl        =   sizeof(struct iphdr)>>2;
+    iph->frag_off       =   df;
+    iph->protocol       =   IPPROTO_IPIP;
+    iph->tos        =   INET_ECN_encapsulate(tos, old_iph->tos);
+    iph->daddr      =   rt->rt_dst;
+    iph->saddr      =   rt->rt_src;
+
+    if ((iph->ttl = tiph->ttl) == 0)
+        iph->ttl    =   old_iph->ttl;
+
+    nf_reset(skb);
+
+    IPTUNNEL_XMIT();
+    return NETDEV_TX_OK;
+
+}
+
+#define IPTUNNEL_XMIT() do {                        \                                                                                                                                        
+    int err;                            \
+    int pkt_len = skb->len - skb_transport_offset(skb);     \
+                                    \
+    skb->ip_summed = CHECKSUM_NONE;                 \
+    ip_select_ident(iph, &rt->u.dst, NULL);             \
+                                    \
+    err = ip_local_out(skb);                    \
+    if (likely(net_xmit_eval(err) == 0)) {              \
+        txq->tx_bytes += pkt_len;               \
+        txq->tx_packets++;                  \
+    } else {                            \
+        stats->tx_errors++;                 \
+        stats->tx_aborted_errors++;             \
+    }                               \
+} while (0)
 ```
