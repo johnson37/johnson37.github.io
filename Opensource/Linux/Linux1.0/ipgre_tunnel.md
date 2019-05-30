@@ -5,7 +5,7 @@
 Ip gre tunnel is similar with ipip tunnel. Ip gre tunnel is one cicso recommended tunnel method.
 
 ## Code Flow
-![ipgre_flow](./pic/ipgre_flow.png)
+![ipgre_flow](./pic/ipgre_flow.PNG)
 
 ```c
 static int ipgre_rcv(struct sk_buff *skb)
