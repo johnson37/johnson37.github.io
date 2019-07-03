@@ -139,6 +139,7 @@ MODULE_LICENSE("GPL");
 
 ```
 ### Jprobe
+
 ```c
 /*
  * Here's a sample kernel module showing the use of jprobes to dump
