@@ -122,4 +122,33 @@ resolve_normal_ct(struct net *net, struct nf_conn *tmpl,
     skb->nfctinfo = *ctinfo;
  
 }
+
+// Now we need to confirm it.
+static unsigned int ipv4_confirm(void *priv,
+                 struct sk_buff *skb,
+                 const struct nf_hook_state *state)
+{
+	return nf_conntrack_confirm(skb);
+}
+
+static inline int nf_conntrack_confirm(struct sk_buff *skb)
+{
+    struct nf_conn *ct = (struct nf_conn *)skb->nfct;
+    int ret = NF_ACCEPT;
+
+    if (ct && !nf_ct_is_untracked(ct)) {
+        if (!nf_ct_is_confirmed(ct))
+            ret = __nf_conntrack_confirm(skb);
+        if (likely(ret == NF_ACCEPT))
+            nf_ct_deliver_cached_events(ct);
+    }   
+    return ret;
+}   
+
+int
+__nf_conntrack_confirm(struct sk_buff *skb)
+{
+	__nf_conntrack_hash_insert(ct, hash, reply_hash);
+}
+
 ```
