@@ -4,12 +4,12 @@
 - Filter Table: accept/drop some special packet.
 - Nat Table: modify Source/Destination IP/source destintaion port
 - Manle Table: modify tos/priority/mark, qos related or skb mark
-- Raw Table:
+- Raw Table: Raw table is used mainly for configuring exemptions from connection tracking in combination with the NOTRACK target.
 ### Chains
 - NF_INET_PRE_ROUTING: raw(-300),mangle(-150),nat(-100)
 - NF_INET_LOCAL_IN: mangle(-150),filter(0),nat(100),
 - NF_INET_FORWARD: mangle(-150),filter(0),
-- NF_INET_LOCAL_OUT:raw(-300),mangle(-150),filter(0),
+- NF_INET_LOCAL_OUT:raw(-300),mangle(-150),nat(-100),filter(0),
 - NF_INET_POST_ROUTING:mangle(-150),nat(100),
 
 ### Code Flow
