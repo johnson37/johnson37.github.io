@@ -14,6 +14,173 @@
 
 
 ## Softirq
+### Definition
+```c
+struct softirq_action
+{
+    void    (*action)(struct softirq_action *);
+};
+
+enum
+{
+    HI_SOFTIRQ=0,
+    TIMER_SOFTIRQ,
+    NET_TX_SOFTIRQ,
+    NET_RX_SOFTIRQ,
+    BLOCK_SOFTIRQ,
+    BLOCK_IOPOLL_SOFTIRQ,
+    TASKLET_SOFTIRQ,
+    SCHED_SOFTIRQ,
+    HRTIMER_SOFTIRQ, /* Unused, but kept as tools rely on the
+                numbering. Sigh! */
+    RCU_SOFTIRQ,    /* Preferable RCU should always be the last softirq */
+    
+    NR_SOFTIRQS
+};
+
+```
+
+### Register Interrupt Function
+```c
+void open_softirq(int nr, void (*action)(struct softirq_action *))
+{
+    softirq_vec[nr].action = action;
+}
+
+static int __init net_dev_init(void)
+{  
+    open_softirq(NET_TX_SOFTIRQ, net_tx_action);
+    open_softirq(NET_RX_SOFTIRQ, net_rx_action);
+}
+
+```
+
+### Trigger Software Interrupt
+```c
+void raise_softirq(unsigned int nr)
+{
+    unsigned long flags;
+
+    local_irq_save(flags);
+    raise_softirq_irqoff(nr);
+    local_irq_restore(flags);
+}
+inline void raise_softirq_irqoff(unsigned int nr)
+{
+    __raise_softirq_irqoff(nr);
+
+    /*
+     * If we're in an interrupt or softirq, we're done
+     * (this also catches softirq-disabled code). We will
+     * actually run the softirq once we return from
+     * the irq or softirq.
+     *
+     * Otherwise we wake up ksoftirqd to make sure we
+     * schedule the softirq soon.
+     */
+    if (!in_interrupt())
+        wakeup_softirqd();
+}   
+
+void __raise_softirq_irqoff(unsigned int nr)
+{
+    trace_softirq_raise(nr);
+    or_softirq_pending(1UL << nr);
+}
+
+```
+```c
+//Above code is to raise the softirq, the real process for softirq exists in softirqd thread
+static void run_ksoftirqd(unsigned int cpu)
+{
+    local_irq_disable();
+    if (local_softirq_pending()) {
+        /*
+         * We can safely run softirq on inline stack, as we are not deep
+         * in the task stack here.
+         */
+        __do_softirq();
+        local_irq_enable();
+        cond_resched_rcu_qs();
+        return;
+    }
+    local_irq_enable();
+}
+
+asmlinkage __visible void __do_softirq(void)
+{
+    unsigned long end = jiffies + MAX_SOFTIRQ_TIME;
+    unsigned long old_flags = current->flags;
+    int max_restart = MAX_SOFTIRQ_RESTART;
+    struct softirq_action *h;
+    bool in_hardirq;
+    __u32 pending;
+    int softirq_bit;
+
+    /*
+     * Mask out PF_MEMALLOC s current task context is borrowed for the
+     * softirq. A softirq handled such as network RX might set PF_MEMALLOC
+     * again if the socket is related to swap
+     */
+    current->flags &= ~PF_MEMALLOC;
+
+    pending = local_softirq_pending();
+    account_irq_enter_time(current);
+
+    __local_bh_disable_ip(_RET_IP_, SOFTIRQ_OFFSET);
+    in_hardirq = lockdep_softirq_start();
+
+restart:
+    /* Reset the pending bitmask before enabling irqs */
+    set_softirq_pending(0);
+
+    local_irq_enable();
+
+    h = softirq_vec;
+
+    while ((softirq_bit = ffs(pending))) {
+        unsigned int vec_nr;
+        int prev_count;
+
+        h += softirq_bit - 1;
+        vec_nr = h - softirq_vec;
+        prev_count = preempt_count();
+
+        kstat_incr_softirqs_this_cpu(vec_nr);
+
+        trace_softirq_entry(vec_nr);
+        h->action(h);
+        trace_softirq_exit(vec_nr);
+        if (unlikely(prev_count != preempt_count())) {
+            pr_err("huh, entered softirq %u %s %p with preempt_count %08x, exited with %08x?\n",
+                   vec_nr, softirq_to_name[vec_nr], h->action,
+                   prev_count, preempt_count());
+            preempt_count_set(prev_count);
+        }
+        h++;
+        pending >>= softirq_bit;
+    }
+
+    rcu_bh_qs();
+    local_irq_disable();
+
+    pending = local_softirq_pending();
+    if (pending) {
+        if (time_before(jiffies, end) && !need_resched() &&
+            --max_restart)
+            goto restart;
+
+        wakeup_softirqd();
+    }
+
+    lockdep_softirq_end(in_hardirq);
+    account_irq_exit_time(current);
+    __local_bh_enable(SOFTIRQ_OFFSET);
+    WARN_ON_ONCE(in_interrupt());
+    tsk_restore_flags(current, old_flags, PF_MEMALLOC);
+}
+
+```
 
 ## Tasklet
 
