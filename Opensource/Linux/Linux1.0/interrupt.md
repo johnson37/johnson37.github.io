@@ -188,4 +188,70 @@ Tasklet是一种软中断。Tasklet跟软中断的区别是：
 - tasklet仅仅支持不同类型的在不同CPU上执行，同种类型的不支持。
 所以，对于软中断函数，需要保证函数可重入。而Tasklet则不需要保证。
 
+```c
+static inline void tasklet_schedule(struct tasklet_struct *t)
+{
+    if (!test_and_set_bit(TASKLET_STATE_SCHED, &t->state))
+        __tasklet_schedule(t);
+}
+   
+void __tasklet_schedule(struct tasklet_struct *t)
+{
+    unsigned long flags;
+        
+    local_irq_save(flags);
+    t->next = NULL;
+    *__this_cpu_read(tasklet_vec.tail) = t;
+    __this_cpu_write(tasklet_vec.tail, &(t->next));
+    raise_softirq_irqoff(TASKLET_SOFTIRQ);
+    local_irq_restore(flags);
+}
+
+void tasklet_init(struct tasklet_struct *t,
+          void (*func)(unsigned long), unsigned long data)
+{
+    t->next = NULL;
+    t->state = 0;
+    atomic_set(&t->count, 0);
+    t->func = func;
+    t->data = data;
+}
+
+```
+
+```c
+//Basic Example for usage 
+
+#include <linux/module.h>
+#include <linux/init.h>
+#include <linux/fs.h>
+#include <linux/kdev_t.h>
+#include <linux/cdev.h>
+#include <linux/kernel.h>
+#include <linux/interrupt.h>  
+
+static struct tasklet_struct my_tasklet;  
+static void tasklet_handler (unsigned long data)
+{
+        printk(KERN_ALERT "tasklet_handler is running.\n");
+}  
+
+static int __init test_init(void)
+{
+        tasklet_init(&my_tasklet, tasklet_handler, 0);
+        tasklet_schedule(&my_tasklet);
+        return 0;
+}  
+
+static void __exit test_exit(void)
+{
+        tasklet_kill(&my_tasklet);
+        printk(KERN_ALERT "test_exit running.\n");
+}
+MODULE_LICENSE("GPL");  
+
+module_init(test_init);
+module_exit(test_exit);
+
+```
 ## Kworker
