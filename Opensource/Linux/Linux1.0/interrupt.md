@@ -311,3 +311,234 @@ module_exit(test_exit);
 
 ```
 ## Kworker
+kworker也是为了完成中断的下半部，与softirq以及tasklet不同的是，kworker允许休眠和被调度，所以相对来说，实时性会差一些。
+
+### Code Flow
+
+#### Init Kworkers
+```c
+static noinline void __init kernel_init_freeable(void)
+{
+    /*
+     * Wait until kthreadd is all set-up.
+     */
+    wait_for_completion(&kthreadd_done);
+
+    /* Now the scheduler is fully set up and can do blocking allocations */
+    gfp_allowed_mask = __GFP_BITS_MASK;
+
+    /*
+     * init can allocate pages on any node
+     */
+    set_mems_allowed(node_states[N_MEMORY]);
+    /*
+     * init can run on any cpu.
+     */
+    set_cpus_allowed_ptr(current, cpu_all_mask);
+
+    cad_pid = task_pid(current);
+
+    smp_prepare_cpus(setup_max_cpus);
+
+    do_pre_smp_initcalls(); //Here we will init workqueue and create some kworker thread.
+    lockup_detector_init();
+
+    smp_init();
+    sched_init_smp();
+
+    page_alloc_init_late();
+
+    do_basic_setup();
+
+    /* Open the /dev/console on the rootfs, this should never fail */
+    if (sys_open((const char __user *) "/dev/console", O_RDWR, 0) < 0)
+        pr_err("Warning: unable to open an initial console.\n");
+
+    (void) sys_dup(0);
+    (void) sys_dup(0);
+	...
+}
+
+static int __init init_workqueues(void)
+{
+    /* initialize CPU pools */
+    for_each_possible_cpu(cpu) {
+        struct worker_pool *pool;
+
+        i = 0;
+        for_each_cpu_worker_pool(pool, cpu) {
+            BUG_ON(init_worker_pool(pool));
+            pool->cpu = cpu;
+            cpumask_copy(pool->attrs->cpumask, cpumask_of(cpu));
+            pool->attrs->nice = std_nice[i++];
+            pool->node = cpu_to_node(cpu);
+
+            /* alloc pool ID */
+            mutex_lock(&wq_pool_mutex);
+            BUG_ON(worker_pool_assign_id(pool));
+            mutex_unlock(&wq_pool_mutex);
+        }
+    }
+
+    /* create the initial worker */
+    for_each_online_cpu(cpu) {
+        struct worker_pool *pool;
+
+        for_each_cpu_worker_pool(pool, cpu) {
+            pool->flags &= ~POOL_DISASSOCIATED;
+            BUG_ON(!create_worker(pool));
+        }
+    }
+    /* create default unbound and ordered wq attrs */
+    for (i = 0; i < NR_STD_WORKER_POOLS; i++) {
+        struct workqueue_attrs *attrs;
+
+        BUG_ON(!(attrs = alloc_workqueue_attrs(GFP_KERNEL)));
+        attrs->nice = std_nice[i];
+        unbound_std_wq_attrs[i] = attrs;
+
+        /*
+         * An ordered wq should have only one pwq as ordering is
+         * guaranteed by max_active which is enforced by pwqs.
+         * Turn off NUMA so that dfl_pwq is used for all nodes.
+         */
+        BUG_ON(!(attrs = alloc_workqueue_attrs(GFP_KERNEL)));
+        attrs->nice = std_nice[i];
+        attrs->no_numa = true;
+        ordered_wq_attrs[i] = attrs;
+    }
+
+}
+
+static struct worker *create_worker(struct worker_pool *pool)
+{
+    struct worker *worker = NULL;
+    int id = -1;
+    char id_buf[16];
+
+    /* ID is needed to determine kthread name */
+    id = ida_simple_get(&pool->worker_ida, 0, 0, GFP_KERNEL);
+    if (id < 0)
+        goto fail;
+
+    worker = alloc_worker(pool->node);
+    if (!worker)
+        goto fail;
+
+    worker->pool = pool;
+    worker->id = id;
+
+    if (pool->cpu >= 0)
+        snprintf(id_buf, sizeof(id_buf), "%d:%d%s", pool->cpu, id,
+             pool->attrs->nice < 0  ? "H" : "");
+    else
+        snprintf(id_buf, sizeof(id_buf), "u%d:%d", pool->id, id);
+
+    worker->task = kthread_create_on_node(worker_thread, worker, pool->node,
+                          "kworker/%s", id_buf);
+
+    /* successful, attach the worker to the pool */
+    worker_attach_to_pool(worker, pool);
+
+    /* start the newly created worker */
+    spin_lock_irq(&pool->lock);
+    worker->pool->nr_workers++;
+    worker_enter_idle(worker);
+    wake_up_process(worker->task);
+    spin_unlock_irq(&pool->lock);
+
+    return worker;
+
+}
+
+```
+#### How these worker works?
+```c
+static int worker_thread(void *__worker)
+{
+    struct worker *worker = __worker;
+    struct worker_pool *pool = worker->pool;
+    do {
+        struct work_struct *work =
+            list_first_entry(&pool->worklist,
+                     struct work_struct, entry);
+
+        if (likely(!(*work_data_bits(work) & WORK_STRUCT_LINKED))) {
+            /* optimization path, not strictly necessary */
+            process_one_work(worker, work);
+            if (unlikely(!list_empty(&worker->scheduled)))
+                process_scheduled_works(worker);
+        } else {
+            move_linked_works(work, &worker->scheduled, NULL);
+            process_scheduled_works(worker);
+        }
+    } while (keep_working(pool));
+}
+static void process_one_work(struct worker *worker, struct work_struct *work)
+__releases(&pool->lock)
+__acquires(&pool->lock)
+{
+	...
+	/* claim and dequeue */
+    debug_work_deactivate(work);
+    hash_add(pool->busy_hash, &worker->hentry, (unsigned long)work);
+    worker->current_work = work;
+    worker->current_func = work->func;
+    worker->current_pwq = pwq;
+    work_color = get_work_color(work);
+
+    worker->current_func(work);
+	...
+}
+```
+
+#### How to add one task to the kworker
+- Init work
+```c
+#define __INIT_WORK(_work, _func, _onstack)             \
+    do {                                \
+        static struct lock_class_key __key;         \
+                                    \
+        __init_work((_work), _onstack);             \
+        (_work)->data = (atomic_long_t) WORK_DATA_INIT();   \
+        lockdep_init_map(&(_work)->lockdep_map, #_work, &__key, 0); \
+        INIT_LIST_HEAD(&(_work)->entry);            \
+        (_work)->func = (_func);                \
+    } while (0)
+```
+- Add to Workqueue
+```c
+static inline bool schedule_work(struct work_struct *work)
+{
+    return queue_work(system_wq, work);
+}
+
+static inline bool queue_work(struct workqueue_struct *wq,
+                  struct work_struct *work)
+{
+    return queue_work_on(WORK_CPU_UNBOUND, wq, work);
+}
+
+bool queue_work_on(int cpu, struct workqueue_struct *wq,
+           struct work_struct *work)
+{
+    bool ret = false;
+    unsigned long flags;
+    
+    local_irq_save(flags);
+
+    if (!test_and_set_bit(WORK_STRUCT_PENDING_BIT, work_data_bits(work))) {
+        __queue_work(cpu, wq, work);
+        ret = true;
+    }
+    
+    local_irq_restore(flags);
+    return ret;
+}
+
+static void __queue_work(int cpu, struct workqueue_struct *wq,
+             struct work_struct *work)
+{
+    insert_work(pwq, work, worklist, work_flags);
+}
+```
