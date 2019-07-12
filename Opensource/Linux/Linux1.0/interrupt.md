@@ -218,6 +218,62 @@ void tasklet_init(struct tasklet_struct *t,
 }
 
 ```
+上面部分实现只是把tasklet加到列表当中。
+
+```c
+void __init softirq_init(void)
+{   
+    int cpu;
+
+    for_each_possible_cpu(cpu) {
+        per_cpu(tasklet_vec, cpu).tail =
+            &per_cpu(tasklet_vec, cpu).head;
+        per_cpu(tasklet_hi_vec, cpu).tail =
+            &per_cpu(tasklet_hi_vec, cpu).head;
+    }   
+            
+    open_softirq(TASKLET_SOFTIRQ, tasklet_action);
+    open_softirq(HI_SOFTIRQ, tasklet_hi_action);
+}
+
+//Here, we note that when t->counter is zero, it means enable this tasklet.
+static void tasklet_action(struct softirq_action *a)
+{
+    struct tasklet_struct *list;
+
+    local_irq_disable();
+    list = __this_cpu_read(tasklet_vec.head);
+    __this_cpu_write(tasklet_vec.head, NULL);
+    __this_cpu_write(tasklet_vec.tail, this_cpu_ptr(&tasklet_vec.head));
+    local_irq_enable();
+
+    while (list) {
+        struct tasklet_struct *t = list;
+
+        list = list->next;
+
+        if (tasklet_trylock(t)) {
+            if (!atomic_read(&t->count)) {
+                if (!test_and_clear_bit(TASKLET_STATE_SCHED,
+                            &t->state))
+                    BUG();
+                t->func(t->data);
+                tasklet_unlock(t);
+                continue;
+            }
+            tasklet_unlock(t);
+        }
+
+        local_irq_disable();
+        t->next = NULL;
+        *__this_cpu_read(tasklet_vec.tail) = t;
+        __this_cpu_write(tasklet_vec.tail, &(t->next));
+        __raise_softirq_irqoff(TASKLET_SOFTIRQ);
+        local_irq_enable();
+    }
+}
+      
+```
 
 ```c
 //Basic Example for usage 
