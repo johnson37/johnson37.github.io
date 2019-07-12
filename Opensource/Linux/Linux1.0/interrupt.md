@@ -183,5 +183,9 @@ restart:
 ```
 
 ## Tasklet
+Tasklet是一种软中断。Tasklet跟软中断的区别是：
+- 软中断支持不同CPU并行执行。不管是同类型的还是不同类型的。
+- tasklet仅仅支持不同类型的在不同CPU上执行，同种类型的不支持。
+所以，对于软中断函数，需要保证函数可重入。而Tasklet则不需要保证。
 
 ## Kworker
