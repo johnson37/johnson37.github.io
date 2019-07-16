@@ -12,3 +12,4 @@
 - [ip_conntrack](./ip_conntrack.md)
 - [interrupt](./interrupt.md)
 - [kthreadd](./kthreadd.md)
+- [key_kernel_thread](./key_kernel_thread.md)
