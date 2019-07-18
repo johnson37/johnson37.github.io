@@ -4,3 +4,4 @@
 - [debug](./debug/debug.md)
 - [thread](./thread/thread.md)
 - [driver](./driver/driver.md)
+- [misc](./misc/misc.md)
