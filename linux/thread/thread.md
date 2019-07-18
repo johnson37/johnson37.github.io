@@ -1,4 +1,4 @@
 # Thread Dic
 
-- [kthread](./kthread.md)
+- [kthread](./kthreadd.md)
 - [key_thread](./key_kernel_thread.md)
