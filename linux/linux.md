@@ -5,3 +5,4 @@
 - [thread](./thread/thread.md)
 - [driver](./driver/driver.md)
 - [misc](./misc/misc.md)
+- [management](./management/management.md)
