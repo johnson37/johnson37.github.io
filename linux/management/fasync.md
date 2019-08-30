@@ -1,11 +1,19 @@
 # Fasync
 
 ## Application Layer
-- lp_fd = open(KLPD_DEV, O_RDWR);
-- signal(SIGIO, io_handler);
-- fcntl(lp_fd, F_SETOWN, getpid());
-- fcntl(lp_fd, F_SETFL, old_flags | FASYNC);
+```c
+    temp_fd = open(TEMP_DEV, O_RDWR);
+    if (temp_fd < 0)
+    { 
+        fprintf(stderr, "Cann't open file \n");
+        return -1;
+    }
 
+    signal(SIGIO, io_handler);
+    fcntl(temp_fd, F_SETOWN, getpid());
+    old_flags = fcntl(temp_fd, F_GETFL);
+    fcntl(temp_fd, F_SETFL, old_flags | FASYNC);
+```
 ## Kernel Layer
 **Set fasync_helper, so we need which application we send the signal**
 ```c
