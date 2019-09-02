@@ -34,15 +34,14 @@ int main(int argc, char **argv)
 
 ## Output
 
-**
-Aug 29 18:10:06 sfu03 syslog_test[24343]: system is unusable
-Aug 29 18:10:06 sfu03 syslog_test[24343]: action must be taken immediately
-Aug 29 18:10:06 sfu03 syslog_test[24343]: critical conditions
-Aug 29 18:10:06 sfu03 syslog_test[24343]: error conditions
-Aug 29 18:10:06 sfu03 syslog_test[24343]: warning conditions
-Aug 29 18:10:06 sfu03 syslog_test[24343]: normal, but significant, condition
-Aug 29 18:10:06 sfu03 syslog_test[24343]: informational message
-**
+
+- Aug 29 18:10:06 sfu03 syslog_test[24343]: system is unusable
+- Aug 29 18:10:06 sfu03 syslog_test[24343]: action must be taken immediately
+- Aug 29 18:10:06 sfu03 syslog_test[24343]: critical conditions
+- Aug 29 18:10:06 sfu03 syslog_test[24343]: error conditions
+- Aug 29 18:10:06 sfu03 syslog_test[24343]: warning conditions
+- Aug 29 18:10:06 sfu03 syslog_test[24343]: normal, but significant, condition
+- Aug 29 18:10:06 sfu03 syslog_test[24343]: informational message
 
 ## the difference between syslog/rsyslog/syslog-ng
 
