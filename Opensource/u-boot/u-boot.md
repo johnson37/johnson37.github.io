@@ -9,3 +9,16 @@ Download Website: https://ftp.denx.de/pub/u-boot/
 
 - generate kernel config file: make smdk2410_config
 - make
+
+### Fix Build error
+
+**board.c:129: error: inline function 'coloured_LED_init' cannot be declared weak**
+
+commnet the related line in board.c
+
+**inline function 'show_boot_progress' cannot be declared weak**
+
+remove the 'inline' keyword
+
+**arm920t/start.S:119: undefined reference to 'coloured_LED_init'**
+remove this call
