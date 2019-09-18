@@ -6,7 +6,7 @@ Download Website: https://ftp.denx.de/pub/u-boot/
 
 **Based on U-Boot 1.3.2 Version**
 
-
+- clean the u-boot: make distclean
 - generate kernel config file: make smdk2410_config
 - make
 
