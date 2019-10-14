@@ -26,6 +26,29 @@ ipv4     2 udp      17 23 src=135.242.61.158 dst=135.242.61.255 sport=137 dport=
 ipv4     2 udp      17 3 src=135.242.61.157 dst=255.255.255.255 sport=1094 dport=1092 [UNREPLIED] src=255.255.255.255 dst=135.242.61.157 sport=1092 dport=1094 mark=0 secmark=0 use=2
 
 ```
+## Process procedue
+### 格式解析
+```c
+ipv4     2 udp      17 2 src=127.0.0.1 dst=127.0.0.1 sport=51873 dport=53 [UNREPLIED] src=127.0.0.1 dst=127.0.0.1 sport=53 dport=51873 mark=0 secmark=0 use=2
+```
+- udp/tcp/icmp 表明协议类型
+- 17: 对应协议的协议号
+- x: 剩余的存活时间
+- src,dst,sport,dport: 连接发出报文的格式
+- UNREPLIED: 标志位，UNREPLIED 表示该连接在等待回复。
+- src,dst,sport,dport: 连接期望收到的回复报文格式。 
+
+### TCP
+对于TCP报文，链接的建立是三次握手的过程。作为连接的发起方，发送SYNC报文之后，连接初始化为SYN_SENT状态，并设置为UNREPLIED标志，当收到对端发送的SYNC+ACK,状态为SYN_RECV，当发送最后的ACK，
+状态为ESTABLISH。当该连接有一定的流量时，会设置ASSURED标志。
+
+
+### UDP
+当UDP连接发送第一个报文时，状态为NEW,标志位UNREPLIED，当收到第一个回复报文时，状态位ESTABLISH。当该连接有一定流量时，会有ASSURED标志。
+
+### ICMP
+当发送请求时，状态为NEW，收到RESPONSE, 状态切换为ESTABLISH.
+
 
 ## Code Flow
 ip_conntrack 也是基于Netfilter架构。
