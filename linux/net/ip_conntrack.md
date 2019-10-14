@@ -4,6 +4,8 @@
 ip conntrack 是iptable中的一部分，用于监控网络中行程的链接，比如TCP的链接以及UDP的链接以及每条链接的状态。
 
 ## 
+
+**Note: 如果看不到，可能是防火墙别关闭，conntrack模块会在开始防火墙时被加载。**
 ```c
 [root@sfu01 net]# pwd
 /proc/net
