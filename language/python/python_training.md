@@ -23,5 +23,26 @@ We devide all languages into two types: build language, script language.
 https://www.python.org/downloads/release/python-370/
 
 ## Grammer Part
+### Hello World!
+### variable
+### operator
+### condition
+### rotate
+### break,continue,pass
+### builtin Function
+#### Number
+#### List
+#### 
+
+#### Dictionary
+
+#### Time & Date
+
+### Python Function
+
+### Module
+
+### File
+
 
 ## Practice
