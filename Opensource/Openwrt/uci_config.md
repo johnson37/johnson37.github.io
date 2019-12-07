@@ -39,3 +39,15 @@ We need to restart the related service
 ```c
 /etc/init.d/network restart
 ```
+
+## UCI Example for modifying the hostname
+
+```c
+uci set system.@system[0].hostname=JohnsonPC
+uci commit system
+uci show system
+
+/etc/init.d/system restart
+
+root@JohnsonPC:/#
+```
