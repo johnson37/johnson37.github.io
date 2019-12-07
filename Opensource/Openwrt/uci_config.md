@@ -21,7 +21,7 @@ uci set network.loopback.ipaddr='127.0.0.2'
 uci commit
 uci show network
 
-root@NOKIA-10G-SFU:/# uci show network
+root@TEMP:/# uci show network
 network.loopback=interface
 network.loopback.ifname='lo'
 network.loopback.proto='static'
