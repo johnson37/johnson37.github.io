@@ -69,4 +69,4 @@ ubus call network reload
 
 In this example, ubus call will send json-format message to ubusd, ubusd will parse the message, and check which process register the related object, and call the related handler.
 
-[!uci_ubus](./pic/uci_ubus.png)
+![uci_ubus](./pic/uci_ubus.png)
