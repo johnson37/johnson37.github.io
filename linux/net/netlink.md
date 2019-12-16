@@ -81,7 +81,86 @@ __netlink_kernel_create(struct net *net, int unit, struct module *module,
 }
 ```
 
-####
+#### packet process
+```c
+static int netlink_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+{
+    err = netlink_unicast(sk, skb, dst_portid, msg->msg_flags&MSG_DONTWAIT);
+}
+
+int netlink_unicast(struct sock *ssk, struct sk_buff *skb,
+		    u32 portid, int nonblock)
+{
+	struct sock *sk;
+	int err;
+	long timeo;
+
+	skb = netlink_trim(skb, gfp_any());
+
+	timeo = sock_sndtimeo(ssk, nonblock);
+retry:
+	sk = netlink_getsockbyportid(ssk, portid);
+	if (IS_ERR(sk)) {
+		kfree_skb(skb);
+		return PTR_ERR(sk);
+	}
+	if (netlink_is_kernel(sk))
+		return netlink_unicast_kernel(sk, skb, ssk);
+
+	if (sk_filter(sk, skb)) {
+		err = skb->len;
+		kfree_skb(skb);
+		sock_put(sk);
+		return err;
+	}
+
+	err = netlink_attachskb(sk, skb, &timeo, ssk);
+	if (err == 1)
+		goto retry;
+	if (err)
+		return err;
+
+	return netlink_sendskb(sk, skb);
+}
+
+static int netlink_unicast_kernel(struct sock *sk, struct sk_buff *skb,
+				  struct sock *ssk)
+{
+	int ret;
+	struct netlink_sock *nlk = nlk_sk(sk);
+
+	ret = -ECONNREFUSED;
+	if (nlk->netlink_rcv != NULL) {
+		ret = skb->len;
+		netlink_skb_set_owner_r(skb, sk);
+		NETLINK_CB(skb).sk = ssk;
+		netlink_deliver_tap_kernel(sk, ssk, skb);
+		nlk->netlink_rcv(skb);
+		consume_skb(skb);
+	} else {
+		kfree_skb(skb);
+	}
+	sock_put(sk);
+	return ret;
+}
+
+
+static void rtnetlink_rcv(struct sk_buff *skb)
+{
+	rtnl_lock();
+	netlink_rcv_skb(skb, &rtnetlink_rcv_msg);
+	rtnl_unlock();
+}
+
+static int rtnetlink_rcv_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
+{
+	doit = rtnl_get_doit(family, type);
+	if (doit == NULL)
+		return -EOPNOTSUPP;
+
+	return doit(skb, nlh);
+}
+```
 
 ### family netlink 
 
