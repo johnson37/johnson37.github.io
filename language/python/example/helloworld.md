@@ -22,3 +22,7 @@ This is one Multi-line commnet.
 And ...
 '''
 ```
+
+## in-built function
+[in-build](https://docs.python.org/zh-cn/3/library/functions.html)
+In one word, in-build function is something you can directly use in Python Language.
