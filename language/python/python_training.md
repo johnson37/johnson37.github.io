@@ -20,19 +20,29 @@ We devide all languages into two types: build language, script language.
 
 ## Environment Setup
 ### Software Package
-https://www.python.org/downloads/release/python-370/
+[Package](https://www.python.org/downloads/release/python-370/)
+
 
 ## Grammer Part
+
 ### Hello World!
+[Example](./example/helloworld.md)
+
 ### variable
+
 ### operator
+
 ### condition
+
 ### rotate
+
 ### break,continue,pass
+
 ### builtin Function
+
 #### Number
+
 #### List
-#### 
 
 #### Dictionary
 
