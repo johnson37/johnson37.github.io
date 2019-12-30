@@ -29,6 +29,7 @@ We devide all languages into two types: build language, script language.
 [Example](./example/helloworld.md)
 
 ### variable
+[Variable Demo](./example/variable.md)
 
 ### operator
 
@@ -56,3 +57,7 @@ We devide all languages into two types: build language, script language.
 
 
 ## Practice
+### Excel
+### Email
+### Python wechat
+itchat
