@@ -32,6 +32,7 @@ We devide all languages into two types: build language, script language.
 [Variable Demo](./example/variable.md)
 
 ### operator
+[Operator Demo](./example/operator.md)
 
 ### condition
 
