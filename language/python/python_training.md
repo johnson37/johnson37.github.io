@@ -35,8 +35,11 @@ We devide all languages into two types: build language, script language.
 [Operator Demo](./example/operator.md)
 
 ### condition
+[Condition Demo](./example/condition.md)
 
 ### rotate
+[rotate Demo](./example/rotate.md)
+
 
 ### break,continue,pass
 
@@ -62,3 +65,6 @@ We devide all languages into two types: build language, script language.
 ### Email
 ### Python wechat
 itchat
+### Fibonacci sequence
+### chemistry 1,2,3,4,5,6,7,8,9,10,11,12,13...20
+### 
