@@ -40,18 +40,14 @@ We devide all languages into two types: build language, script language.
 ### rotate
 [rotate Demo](./example/rotate.md)
 
-
-### break,continue,pass
-
 ### builtin Function
+[build_in](https://docs.python.org/3/library/functions.html)
 
 #### Number
 
 #### List
 
 #### Dictionary
-
-#### Time & Date
 
 ### Python Function
 
