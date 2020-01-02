@@ -43,7 +43,8 @@ We devide all languages into two types: build language, script language.
 ### builtin Function
 [build_in](https://docs.python.org/3/library/functions.html)
 
-#### Number
+#### String
+[String Demo](./example/string.md)
 
 #### List
 
