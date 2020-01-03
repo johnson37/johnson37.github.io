@@ -60,7 +60,7 @@ We devide all languages into two types: build language, script language.
 
 
 ## Practice
-
+[Practice](./practice/practice.md)
 ### Excel
 
 ### Email
