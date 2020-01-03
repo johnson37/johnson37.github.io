@@ -47,8 +47,10 @@ We devide all languages into two types: build language, script language.
 [String Demo](./example/string.md)
 
 #### List
+[List Demo](./example/list.md)
 
 #### Dictionary
+[List Dic](./example/dic.md)
 
 ### Python Function
 
@@ -58,8 +60,11 @@ We devide all languages into two types: build language, script language.
 
 
 ## Practice
+
 ### Excel
+
 ### Email
+
 ### Python wechat
 itchat
 ### Fibonacci sequence
