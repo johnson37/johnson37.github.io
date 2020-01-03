@@ -53,6 +53,7 @@ We devide all languages into two types: build language, script language.
 [List Dic](./example/dic.md)
 
 ### Python Function
+[Function Demo](./example/function.md)
 
 ### Module
 
