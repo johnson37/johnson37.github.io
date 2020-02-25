@@ -14,4 +14,4 @@
 - [ipsec](./ipsec.md)
 - [iptables](./iptables.md)
 - [netlink](./netlink.md)
-- [ethtoo](./ethtool.md)
+- [ethtool](./ethtool.md)
