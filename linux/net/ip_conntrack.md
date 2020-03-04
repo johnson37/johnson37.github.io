@@ -55,6 +55,22 @@ ipv4     2 udp      17 2 src=127.0.0.1 dst=127.0.0.1 sport=51873 dport=53 [UNREP
 ## Code Flow
 ip_conntrack 也是基于Netfilter架构。
 
+**Note: conntrack有几个主要的函数，ipv4_conntrack_in/ipv4_conntrack_local/ipv4_helper/ipv4_confirm**
+**ipv4_conntrack_in/ipv4_conntrack_local --> to build the conntrack**
+**ipv4_help:For Linux systems configured with NAT forwarding and firewall functions, 
+protocols such as SIP, H323, and ftp cannot work properly. Such protocols generally consist of two types of traffic: 
+control flow and data flow, where control flow is used to negotiate data. 
+The parameters of the flow include IP address and port information. 
+NAT changed the IP address and port number causing its data flow to be blocked. 
+The function ipv4_helper is used to handle this situation. 
+For example, the helper functions sip_help_udp and sip_help_tcp of the SIP protocol 
+are used to modify the media stream negotiation parameters in the SIP protocol.**
+
+**ipv4_confirm: The function ipv4_confirm finally calls __nf_conntrack_confirm for specific processing, 
+which removes the previously created connection tracking structure nf_conn from the unconfirmed list and adds it to the global nf_conntrack_hash list. 
+See function __nf_conntrack_hash_insert, which adds the two directions of the data stream (IP_CT_DIR_ORIGINAL and IP_CT_DIR_REPLY) 
+to the global nf_conntrack_hash list indexed by different hash values ​​(calculated from the stream characteristics).**
+
 ```c
 static struct nf_hook_ops ipv4_conntrack_ops[] __read_mostly = {
     {
@@ -94,6 +110,124 @@ static struct nf_hook_ops ipv4_conntrack_ops[] __read_mostly = {
         .priority   = NF_IP_PRI_CONNTRACK_CONFIRM,
     },
 };
+
+struct nf_conntrack_l3proto nf_conntrack_l3proto_ipv4 __read_mostly = {
+    .l3proto     = PF_INET,
+    .name        = "ipv4",
+    .pkt_to_tuple    = ipv4_pkt_to_tuple,
+    .invert_tuple    = ipv4_invert_tuple,
+    .print_tuple     = ipv4_print_tuple,
+    .get_l4proto     = ipv4_get_l4proto,
+#if IS_ENABLED(CONFIG_NF_CT_NETLINK)
+    .tuple_to_nlattr = ipv4_tuple_to_nlattr,
+    .nlattr_tuple_size = ipv4_nlattr_tuple_size,
+    .nlattr_to_tuple = ipv4_nlattr_to_tuple,
+    .nla_policy  = ipv4_nla_policy,
+#endif
+#if defined(CONFIG_SYSCTL) && defined(CONFIG_NF_CONNTRACK_PROC_COMPAT)
+    .ctl_table_path  = "net/ipv4/netfilter",
+#endif
+    .init_net    = ipv4_init_net,
+    .me      = THIS_MODULE,
+};
+
+struct nf_conntrack_l3proto nf_conntrack_l3proto_ipv6 __read_mostly = {
+    .l3proto        = PF_INET6,
+    .name           = "ipv6",
+    .pkt_to_tuple       = ipv6_pkt_to_tuple,
+    .invert_tuple       = ipv6_invert_tuple,
+    .print_tuple        = ipv6_print_tuple,
+    .get_l4proto        = ipv6_get_l4proto,
+#if IS_ENABLED(CONFIG_NF_CT_NETLINK)
+    .tuple_to_nlattr    = ipv6_tuple_to_nlattr,
+    .nlattr_tuple_size  = ipv6_nlattr_tuple_size,
+    .nlattr_to_tuple    = ipv6_nlattr_to_tuple,
+    .nla_policy     = ipv6_nla_policy,
+#endif
+    .me         = THIS_MODULE,
+};
+
+struct nf_conntrack_l4proto nf_conntrack_l4proto_tcp4 __read_mostly =
+{
+    .l3proto        = PF_INET,
+    .l4proto        = IPPROTO_TCP,
+    .name           = "tcp",
+    .pkt_to_tuple       = tcp_pkt_to_tuple,
+    .invert_tuple       = tcp_invert_tuple,
+    .print_tuple        = tcp_print_tuple,
+    .print_conntrack    = tcp_print_conntrack,
+    .packet         = tcp_packet,
+    .get_timeouts       = tcp_get_timeouts,
+    .new            = tcp_new,
+    .error          = tcp_error,
+#if IS_ENABLED(CONFIG_NF_CT_NETLINK)
+    .to_nlattr      = tcp_to_nlattr,
+    .nlattr_size        = tcp_nlattr_size,
+    .from_nlattr        = nlattr_to_tcp,
+    .tuple_to_nlattr    = nf_ct_port_tuple_to_nlattr,
+    .nlattr_to_tuple    = nf_ct_port_nlattr_to_tuple,
+    .nlattr_tuple_size  = tcp_nlattr_tuple_size,
+    .nla_policy     = nf_ct_port_nla_policy,
+#endif
+#if IS_ENABLED(CONFIG_NF_CT_NETLINK_TIMEOUT)
++---  8 lines: .ctnl_timeout  = {--------------------------------------------------------------------------------------------------------------------------------------
+#endif /* CONFIG_NF_CT_NETLINK_TIMEOUT */
+    .init_net       = tcp_init_net,
+    .get_net_proto      = tcp_get_net_proto,
+};
+
+struct nf_conntrack_l4proto nf_conntrack_l4proto_udp4 __read_mostly =
+{
+    .l3proto        = PF_INET,
+    .l4proto        = IPPROTO_UDP,
+    .name           = "udp",
+    .pkt_to_tuple       = udp_pkt_to_tuple,
+    .invert_tuple       = udp_invert_tuple,
+    .print_tuple        = udp_print_tuple,
+    .packet         = udp_packet,
+    .get_timeouts       = udp_get_timeouts,
+    .new            = udp_new,
+    .error          = udp_error,
+#if IS_ENABLED(CONFIG_NF_CT_NETLINK)
+    .tuple_to_nlattr    = nf_ct_port_tuple_to_nlattr,
+    .nlattr_to_tuple    = nf_ct_port_nlattr_to_tuple,
+    .nlattr_tuple_size  = nf_ct_port_nlattr_tuple_size,
+    .nla_policy     = nf_ct_port_nla_policy,
+#endif
+#if IS_ENABLED(CONFIG_NF_CT_NETLINK_TIMEOUT)
++---  7 lines: .ctnl_timeout  = {--------------------------------------------------------------------------------------------------------------------------------------
+#endif /* CONFIG_NF_CT_NETLINK_TIMEOUT */
+    .init_net       = udp_init_net,
+    .get_net_proto      = udp_get_net_proto,
+};
+
+struct nf_conntrack_l4proto nf_conntrack_l4proto_icmp __read_mostly =
+{
+    .l3proto        = PF_INET,
+    .l4proto        = IPPROTO_ICMP,
+    .name           = "icmp",
+    .pkt_to_tuple       = icmp_pkt_to_tuple,
+    .invert_tuple       = icmp_invert_tuple,
+    .print_tuple        = icmp_print_tuple,
+    .packet         = icmp_packet,
+    .get_timeouts       = icmp_get_timeouts,
+    .new            = icmp_new,
+    .error          = icmp_error,
+    .destroy        = NULL,
+    .me         = NULL,
+#if IS_ENABLED(CONFIG_NF_CT_NETLINK)
+    .tuple_to_nlattr    = icmp_tuple_to_nlattr,
+    .nlattr_tuple_size  = icmp_nlattr_tuple_size,
+    .nlattr_to_tuple    = icmp_nlattr_to_tuple,
+    .nla_policy     = icmp_nla_policy,
+#endif
+#if IS_ENABLED(CONFIG_NF_CT_NETLINK_TIMEOUT)
++---  7 lines: .ctnl_timeout  = {--------------------------------------------------------------------------------------------------------------------------------------
+#endif /* CONFIG_NF_CT_NETLINK_TIMEOUT */
+    .init_net       = icmp_init_net,
+    .get_net_proto      = icmp_get_net_proto,
+};
+
 
 //Packet will pass through NF_INET_PRE_ROUTING/NF_INET_LOCAL_IN/NF_INET_LOCAL_OUT(response message)/NF_INET_POST_ROUTING(response message)
 //We will call ipv4_conntrack_in & ipv4_confirm
