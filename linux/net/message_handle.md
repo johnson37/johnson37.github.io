@@ -13,3 +13,7 @@ Linux提供了几种进程间通信的方式，包括管道，信号量，消息
 目的地是谁。转发进程通过监听socket，读取并解析，并通过fd(与对应进程的socket fd)进行发送。
 
 ![graph](./pic/message_handler.PNG)
+
+## OpenWRT 中的进程中通信机制 UBUS
+UBUS的通信机制也是类似。在Openwrt中有一个ubusd的daemon进程。作为socket通信的server，其他进程
+比如procd，netifd，以及ubus cli 都作为socket 通信的client。
