@@ -112,4 +112,5 @@ bool vlan_do_receive(struct sk_buff **skbp)
 ```
 
 ## chart
-[chart](./pic/vconfig.PNG)
+
+![chart](./pic/vconfig.PNG)
