@@ -258,3 +258,7 @@ static void log_locally(time_t now, char *msg)
 	//write
 }
 ```
+
+## Communication Flow
+
+![flow](./pic/syslogd.PNG)
