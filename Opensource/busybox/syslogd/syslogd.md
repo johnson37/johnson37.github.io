@@ -37,7 +37,131 @@ System logging utility
         -f FILE         Use FILE as config (default:/etc/syslog.conf)
 **
 
+## syslog api
+### Basic usage
+- void openlog(const char *ident, int option, int facility);
+- void syslog(int priority, const char *format, ...);
+- void closelog(void);
 
+### Basic Example
+```c
+#include <syslog.h>
+
+int main(int argc, char **argv)
+{
+    openlog("syslog_test", LOG_PID, LOG_DAEMON);
+
+    syslog(LOG_EMERG, "system is unusable");
+    syslog(LOG_ALERT, "action must be taken immediately");
+    syslog(LOG_CRIT, "critical conditions");
+    syslog(LOG_ERR, "error conditions");
+    syslog(LOG_WARNING, "warning conditions");
+    syslog(LOG_NOTICE, "normal, but significant, condition");
+    syslog(LOG_INFO, "informational message");
+    syslog(LOG_DEBUG, "debug-level message");
+
+    closelog();
+
+    return 0;
+}
+
+```
+
+### Output
+
+Default Destination: /var/log/messages 
+
+- Aug 29 18:10:06 sfu03 syslog_test[24343]: system is unusable
+- Aug 29 18:10:06 sfu03 syslog_test[24343]: action must be taken immediately
+- Aug 29 18:10:06 sfu03 syslog_test[24343]: critical conditions
+- Aug 29 18:10:06 sfu03 syslog_test[24343]: error conditions
+- Aug 29 18:10:06 sfu03 syslog_test[24343]: warning conditions
+- Aug 29 18:10:06 sfu03 syslog_test[24343]: normal, but significant, condition
+- Aug 29 18:10:06 sfu03 syslog_test[24343]: informational message
+
+### API Code Flow
+
+#### openlog
+openlog open one socket and connect to syslogd
+```c
+void
+openlog(ident, logstat, logfac)
+    const char *ident;
+    int logstat, logfac;
+{
+    if (ident != NULL)
+        LogTag = ident;
+    LogStat = logstat;
+    if (logfac != 0 && (logfac &~ LOG_FACMASK) == 0)
+        LogFacility = logfac;
+
+    if (LogFile == -1) {
+        SyslogAddr.sa_family = AF_UNIX;
+        (void)strncpy(SyslogAddr.sa_data, _PATH_LOG,
+            sizeof(SyslogAddr.sa_data));
+        if (LogStat & LOG_NDELAY) {
+            if ((LogFile = socket(AF_UNIX, SOCK_DGRAM, 0)) == -1)
+                return;
+            (void)fcntl(LogFile, F_SETFD, 1);
+        }
+    }
+    if (LogFile != -1 && !connected)
+        if (connect(LogFile, &SyslogAddr, sizeof(SyslogAddr)) == -1) {
+            (void)close(LogFile);
+            LogFile = -1;
+        } else
+            connected = 1;
+}
+
+```
+#### syslog
+```c
+void
+#if __STDC__
+syslog(int pri, const char *fmt, ...)
+#else
+syslog(pri, fmt, va_alist)
+    int pri;
+    char *fmt;
+    va_dcl
+#endif
+{
+    va_list ap;
+
+#if __STDC__
+    va_start(ap, fmt);
+#else
+    va_start(ap);
+#endif
+    vsyslog(pri, fmt, ap);
+    va_end(ap);
+}
+
+void
+vsyslog(pri, fmt, ap)
+    int pri;
+    register const char *fmt;
+    va_list ap;
+{
+    if (send(LogFile, tbuf, cnt, 0) >= 0)
+        return;
+
+}
+```
+#### closelog
+```c
+void
+closelog()
+{
+    (void)close(LogFile);
+    LogFile = -1;
+    connected = 0;
+}
+
+```
+
+
+## syslogd code flow
 ```c
 int syslogd_main(int argc UNUSED_PARAM, char **argv)
 {
