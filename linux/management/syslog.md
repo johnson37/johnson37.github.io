@@ -34,6 +34,7 @@ int main(int argc, char **argv)
 
 ## Output
 
+/var/log/messages
 
 - Aug 29 18:10:06 sfu03 syslog_test[24343]: system is unusable
 - Aug 29 18:10:06 sfu03 syslog_test[24343]: action must be taken immediately
