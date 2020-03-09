@@ -1,5 +1,43 @@
 # syslogd
 
+syslog 有一套API, openlog/syslog/closelog.
+
+syslogd 有一个参数，指定一个配置文件，例如：
+syslogd -s 1024 -b 3 -f /tmp/syslog.conf
+-s: 设置文件的大小，文件写满以后，会以加后缀的方式创建一个新文件。
+-f: syslog 配置文件。
+-b: N rotated logs to keep (default 1, max 99, 0=purge)
+
+syslog.conf 文件可以指定不同log写到哪个文件里面。
+**
+cat syslog.conf
+kern,auth,authpriv,syslog,user.warning;daemon.notice  /logs/messages
+**
+
+**
+syslogd --help
+BusyBox v1.30.1 () multi-call binary.
+
+Usage: syslogd [OPTIONS]
+
+System logging utility
+
+        -n              Run in foreground
+        -R HOST[:PORT]  Log to HOST:PORT (default PORT:514)
+        -L              Log locally and via network (default is network only if -R)
+        -C[size_kb]     Log to shared mem buffer (use logread to read it)
+        -K              Log to kernel printk buffer (use dmesg to read it)
+        -O FILE         Log to FILE (default: /var/log/messages, stdout if -)
+        -s SIZE         Max size (KB) before rotation (default 200KB, 0=off)
+        -b N            N rotated logs to keep (default 1, max 99, 0=purge)
+        -l N            Log only messages more urgent than prio N (1-8)
+        -S              Smaller output
+        -t              Strip client-generated timestamps
+        -D              Drop duplicates
+        -f FILE         Use FILE as config (default:/etc/syslog.conf)
+**
+
+
 ```c
 int syslogd_main(int argc UNUSED_PARAM, char **argv)
 {
