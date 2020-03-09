@@ -1,4 +1,4 @@
 # busybox
 
-[vconfig](./vconfig.md)
-[procps](./common.md)
+[networking](./network/index.md)
+[procps](./procps.md)
