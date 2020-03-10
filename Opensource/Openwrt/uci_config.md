@@ -8,7 +8,7 @@ UCI configuration files are located in the directory /etc/config/
 ### uci command usage
 
 ```c
-root@NOKIA-10G-SFU:/# uci show network
+root@xxxx:/# uci show network
 network.loopback=interface
 network.loopback.ifname='lo'
 network.loopback.proto='static'
