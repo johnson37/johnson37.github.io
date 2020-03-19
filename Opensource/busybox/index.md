@@ -6,3 +6,4 @@
 - [coreutils](./coreutils/index.md)
 - [loginutils](./loginutils/index.md)
 - [modutils](./modutils/index.md)
+- [init](./init/index.md)
