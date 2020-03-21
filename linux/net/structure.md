@@ -7,12 +7,12 @@
 ```c
 struct sk_buff {
     /* These two members must be first. */
-    struct sk_buff      *next;
+    struct sk_buff      *next;   //sk_buff 是由双向链表来管理的。
     struct sk_buff      *prev;
 
-    ktime_t         tstamp;
+    ktime_t         tstamp;		// 记录一个skb packet的收包时间。
 
-    struct sock     *sk;
+    struct sock     *sk;		//
     struct net_device   *dev;
 
     /*
@@ -111,3 +111,5 @@ struct sk_buff {
 
 
 ```
+
+
