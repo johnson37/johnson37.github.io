@@ -36,20 +36,20 @@ struct sk_buff {
     __u16           mac_len,	// size of MAC Header.
                 hdr_len;
     union {
-        __wsum      csum;
+        __wsum      csum;		// checksum
         struct {
             __u16   csum_start;
             __u16   csum_offset;
         };
     };
-    __u32           priority;
+    __u32           priority;	//Qos related
     kmemcheck_bitfield_begin(flags1);
     __u8            local_df:1,
-                cloned:1,
+                cloned:1,		//This skb buffer is cloned from another skb.
                 ip_summed:2,
                 nohdr:1,
-                nfctinfo:3;
-    __u8            pkt_type:3,
+                nfctinfo:3;		//netfilter conntract related.
+    __u8            pkt_type:3,	//Initialzed by eth_type_trans
                 fclone:2,
                 ipvs_property:1,
                 peeked:1,
@@ -57,18 +57,19 @@ struct sk_buff {
     kmemcheck_bitfield_end(flags1);
     __be16          protocol;
 
-    void            (*destructor)(struct sk_buff *skb);
+    void            (*destructor)(struct sk_buff *skb);	//It's one callback function. It ususlly is initialized by socket.
+														//When skb is freed, it may be triggered to handle memory.
 #if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
-    struct nf_conntrack *nfct;
-    struct sk_buff      *nfct_reasm;
+    struct nf_conntrack *nfct;		//related with netfilter conntrack
+    struct sk_buff      *nfct_reasm;//related with netfilter conntrack
 #endif
 #ifdef CONFIG_BRIDGE_NETFILTER
-    struct nf_bridge_info   *nf_bridge;
+    struct nf_bridge_info   *nf_bridge;	// Netfilter related
 #endif
 
     int         skb_iif;
 #ifdef CONFIG_NET_SCHED
-    __u16           tc_index;   /* traffic control index */
+    __u16           tc_index;   /* traffic control index */	// Traffic control related
 #ifdef CONFIG_NET_CLS_ACT
     __u16           tc_verd;    /* traffic control verdict */
 #endif
@@ -119,4 +120,6 @@ struct sk_buff {
 ### head/end/data/tail
 ![head/end/data/tail](./pic/skb_data.PNG)
 
+skb->data, 是指当前有效数据的头
+skb->tail，是指当前有效数据的尾
 
