@@ -3,6 +3,7 @@
 主要是对Linux网络协议栈中的主要结构体做一个说明。
 
 ## sk_buff
+**This structure comes from Linux 2.6 Version**
 
 ```c
 struct sk_buff {
@@ -30,9 +31,9 @@ struct sk_buff {
 #ifdef CONFIG_XFRM
     struct  sec_path    *sp;
 #endif
-    unsigned int        len,
-                data_len;
-    __u16           mac_len,
+    unsigned int        len,   // len 指的是当前协议包的数据长度，处在网络层，即IP报文的长度，处在TCP层，即TCP报文的长度。
+                data_len;		// 只有分片报文才有效。
+    __u16           mac_len,	// size of MAC Header.
                 hdr_len;
     union {
         __wsum      csum;
