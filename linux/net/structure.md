@@ -12,8 +12,11 @@ struct sk_buff {
 
     ktime_t         tstamp;		// 记录一个skb packet的收包时间。
 
-    struct sock     *sk;		//
-    struct net_device   *dev;
+    struct sock     *sk;		// This is one variable which is related with socket, if the packet 
+								// is send by local or received by local process, then we need this.
+								// If we only to forward the packet, the pointer is NULL.
+    struct net_device   *dev;	//If the packet is received, it means which device the packet is received from,
+								// If the packet will be sent, it means which device the packet is sent through.
 
     /*
      * This is the control buffer. It is free to use for every
