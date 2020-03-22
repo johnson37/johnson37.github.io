@@ -116,4 +116,7 @@ struct sk_buff {
 
 ```
 
+### head/end/data/tail
+![head/end/data/tail](./pic/skb_data.PNG)
+
 
