@@ -123,3 +123,42 @@ struct sk_buff {
 skb->data, 是指当前有效数据的头
 skb->tail，是指当前有效数据的尾
 
+### skb_put/skb_push/skb_pull/skb_reserve
+```c
+static inline unsigned char *skb_put(struct sk_buff *skb, unsigned int len)
+{
+    unsigned char *tmp = skb->tail;
+    SKB_LINEAR_ASSERT(skb);
+    skb->tail += len;
+    skb->len  += len;
+    if (unlikely(skb->tail>skb->end))
+        skb_over_panic(skb, len, current_text_addr());
+    return tmp;
+}
+```
+
+```c
+static inline unsigned char *skb_push(struct sk_buff *skb, unsigned int len)
+{
+    skb->data -= len;
+    skb->len  += len;
+    if (unlikely(skb->data<skb->head))
+        skb_under_panic(skb, len, current_text_addr());
+    return skb->data;
+}
+```
+
+```c
+static inline unsigned char *skb_pull(struct sk_buff *skb, unsigned int len)
+{
+    return unlikely(len > skb->len) ? NULL : __skb_pull(skb, len);
+}
+static inline unsigned char *__skb_pull(struct sk_buff *skb, unsigned int len)
+{
+    skb->len -= len;
+    BUG_ON(skb->len < skb->data_len);
+    return skb->data += len;
+}
+```
+
+![skb_put/skb_push/skb_pull](./pic/skb_put_push_pull.PNG)
