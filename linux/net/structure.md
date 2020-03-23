@@ -162,3 +162,45 @@ static inline unsigned char *__skb_pull(struct sk_buff *skb, unsigned int len)
 ```
 
 ![skb_put/skb_push/skb_pull](./pic/skb_put_push_pull.PNG)
+
+### alloc_skb
+** skb_share_info is for IP Fragment **
+```c
+static inline struct sk_buff *alloc_skb(unsigned int size,
+                    gfp_t priority)
+{   
+    return __alloc_skb(size, priority, 0);
+}     
+
+struct sk_buff *__alloc_skb(unsigned int size, gfp_t gfp_mask,
+                int fclone)
+{                          
+    struct sk_buff *skb;
+    u8 *data;
+
+    /* Get the HEAD */
+    if (fclone)
+        skb = kmem_cache_alloc(skbuff_fclone_cache,
+                       gfp_mask & ~__GFP_DMA);
+    else
+        skb = kmem_cache_alloc(skbuff_head_cache,
+                       gfp_mask & ~__GFP_DMA);
+
+    if (!skb)
+        goto out;
+     
+    /* Get the DATA. Size must match skb_add_mtu(). */
+    size = SKB_DATA_ALIGN(size);
+    data = kmalloc(size + sizeof(struct skb_shared_info), gfp_mask);
+    if (!data)
+        goto nodata;    
+
+    memset(skb, 0, offsetof(struct sk_buff, truesize));
+    skb->truesize = size + sizeof(struct sk_buff);
+    atomic_set(&skb->users, 1);
+    skb->head = data;
+    skb->data = data;
+    skb->tail = data;
+    skb->end  = data + size;
+}
+```
