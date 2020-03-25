@@ -125,7 +125,6 @@ int unregister_netdevice_notifier(struct notifier_block *nb)
     return notifier_chain_unregister(&netdev_chain, nb);
 }
 
-
 ```
 
 现在注册的部分已经Ready，就等时间触发并调用了。
