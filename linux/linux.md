@@ -5,5 +5,6 @@
 - [thread](./thread/thread.md)
 - [driver](./driver/driver.md)
 - [misc](./misc/misc.md)
+- [mm](./mm/mm.md)
 - [management](./management/management.md)
 - [application](./application/index.md)
