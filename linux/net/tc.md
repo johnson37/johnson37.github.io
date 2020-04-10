@@ -114,6 +114,14 @@ int register_qdisc(struct Qdisc_ops *qops)
 ```
 ### Create Qdisc
 ```c
+static int __init pktsched_init(void)
+{
+    rtnl_register(PF_UNSPEC, RTM_NEWQDISC, tc_modify_qdisc, NULL, NULL);
+    rtnl_register(PF_UNSPEC, RTM_DELQDISC, tc_get_qdisc, NULL, NULL);
+    rtnl_register(PF_UNSPEC, RTM_GETQDISC, tc_get_qdisc, tc_dump_qdisc, NULL);
+}
+```
+```c
 static struct Qdisc *
 qdisc_create(struct net_device *dev, struct netdev_queue *dev_queue,
          struct Qdisc *p, u32 parent, u32 handle,
