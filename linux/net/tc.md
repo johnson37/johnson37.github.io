@@ -183,3 +183,11 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
 
 ```
 ### netem
+
+#### Usage
+```
+tc qdisc add dev eth0 root netem delay 200ms
+tc qdisc add dev eth0 root netem loss 10%
+tc qdisc change dev eth0 root netem delay 100ms
+tc qdisc del dev eth0 root
+```
