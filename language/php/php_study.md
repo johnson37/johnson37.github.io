@@ -1,4 +1,111 @@
-# PHP
+# PHP Study Note
+
+## Grammer
+
+### Basic Grammer
+php 脚本以<?php 开始，以 ?> 结束
+```php
+<?php
+// PHP 代码
+?>
+```
+
+### Comment
+Comment 方式与C语言相同。
+
+### PHP Variable
+- php不需要声明变量。
+- 变量以 $ 符号开始，后面跟着变量的名称
+- 变量名必须以字母或者下划线字符开始
+- 变量名只能包含字母数字字符以及下划线（A-z、0-9 和 _ ）
+- 变量名不能包含空格
+- 变量名是区分大小写的（$y 和 $Y 是两个不同的变量
+
+#### PHP 弱类型语言
+C语言是一门强类型语言，在定义变量时需要说明变量的类型，PHP会根据变量赋值情况自动。
+
+#### PHP 变量域
+php有四种不同的作用域：
+- local
+- global
+- static
+- parameter
+
+global：在函数外部定义的为全局变量，可以在函数外的任何地方使用，如果想在函数内部使用，需要加global
+local： 函数内部定义的为局部变量，只能在函数内部使用。
+static：static的含义跟C语言之函数内static变量含义相同。
+
+#### echo 与 print
+echo和print是两个php中的输出语句。
+echo可以输出一个或者多个字符串，echo比print快
+print只能输出一个字符串，但是有返回值。
+
+### 数据类型
+String（字符串）, Integer（整型）, Float（浮点型）, Boolean（布尔型）, Array（数组）, Object（对象）, NULL（空值）
+#### String
+```php
+<?php 
+$x = "Hello world!";
+echo $x;
+echo "<br>"; 
+$x = 'Hello world!';
+echo $x;
+?>
+```
+#### 整形
+```php
+<?php 
+$x = 5985;
+var_dump($x);
+echo "<br>"; 
+$x = -345; // 负数 
+var_dump($x);
+echo "<br>"; 
+$x = 0x8C; // 十六进制数
+var_dump($x);
+echo "<br>";
+$x = 047; // 八进制数
+var_dump($x);
+?>
+```
+#### 浮点型
+```php
+<?php 
+$x = 10.365;
+var_dump($x);
+echo "<br>"; 
+$x = 2.4e3;
+var_dump($x);
+echo "<br>"; 
+$x = 8E-5;
+var_dump($x);
+?>
+```
+#### 布尔型
+```php
+$x=true;
+$y=false;
+```
+
+#### PHP 数组
+
+```php
+<?php 
+$cars=array("Volvo","BMW","Toyota");
+var_dump($cars);
+?>
+```
+#### PHP 对象
+
+#### PHP NULL
+NULL 值表示变量没有值。NULL 是数据类型为 NULL 的值。
+
+NULL 值指明一个变量是否为空值。 同样可用于数据空值和NULL值的区别。
+
+### PHP 大小比较
+- ==：只比较大小，不比较类型
+- ===：大小类型都比较
+
 
 ### PHP 常量
 bool define ( string $name , mixed $value [, bool $case_insensitive = false ] )
