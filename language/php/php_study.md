@@ -536,3 +536,57 @@ foreach($age as $x=>$x_value)
 ```
 
 #### 多维数组 - 包含一个或多个数组的数组
+
+TBD
+
+#### 数组排序
+
+##### sort 升序排列
+```php
+<?php
+$cars=array("Volvo","BMW","Toyota");
+sort($cars);
+?> 
+```
+
+```php
+<?php
+$numbers=array(4,6,2,22,11);
+sort($numbers);
+?> 
+```
+##### rsort 降序排列
+
+```php
+<?php
+$cars=array("Volvo","BMW","Toyota");
+rsort($cars);
+?> 
+```
+
+```php
+<?php
+$numbers=array(4,6,2,22,11);
+rsort($numbers);
+?> 
+```
+
+### 超级全局变量
+
+#### $GLOBALS
+
+#### $_SERVER
+
+#### $_REQUEST
+
+#### $_POST
+
+#### $_GET
+
+#### $_FILES
+
+#### $_ENV
+
+#### $_COOKIE
+
+#### $_SESSION
