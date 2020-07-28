@@ -628,13 +628,83 @@ $_SERVER 是一个包含了诸如头信息(header)、路径(path)、以及脚本
 |$_SERVER['SCRIPT_NAME'] 	|包含当前脚本的路径。这在页面需要指向自己时非常有用。__FILE__ 常量包含当前脚本(例如包含文件)的完整路径和文件名。|
 |$_SERVER['SCRIPT_URI'] 	|URI 用来指定要访问的页面。例如 "/index.html"。 |
 
-
 #### $_REQUEST
+PHP $_REQUEST 用于收集HTML表单提交的数据。
+
+以下实例显示了一个输入字段（input）及提交按钮(submit)的表单(form)。 当用户通过点击 "Submit" 按钮提交表单数据时, 表单数据将发送至<form>标签中 action 属性中指定的脚本文件。 在这个实例中，我们指定文件来处理表单数据。如果你希望其他的PHP文件来处理该数据，你可以修改该指定的脚本文件名。 然后，我们可以使用超级全局变量 $_REQUEST 来收集表单中的 input 字段数据:
+```php
+
+<html>
+<body>
+ 
+<form method="post" action="<?php echo $_SERVER['PHP_SELF'];?>">
+Name: <input type="text" name="fname">
+<input type="submit">
+</form>
+ 
+<?php 
+$name = $_REQUEST['fname']; 
+echo $name; 
+?>
+ 
+</body>
+</html>
+
+```
 
 #### $_POST
+PHP $_POST 被广泛应用于收集表单数据，在HTML form标签的指定该属性："method="post"。
 
+以下实例显示了一个输入字段（input）及提交按钮(submit)的表单(form)。 当用户通过点击 "Submit" 按钮提交表单数据时, 表单数据将发送至<form>标签中 action 属性中指定的脚本文件。 在这个实例中，我们指定文件来处理表单数据。如果你希望其他的PHP文件来处理该数据，你可以修改该指定的脚本文件名。 然后，我们可以使用超级全局变量 $_POST 来收集表单中的 input 字段数据:
+
+```php
+
+<html>
+<body>
+ 
+<form method="post" action="<?php echo $_SERVER['PHP_SELF'];?>">
+Name: <input type="text" name="fname">
+<input type="submit">
+</form>
+ 
+<?php 
+$name = $_POST['fname']; 
+echo $name; 
+?>
+ 
+</body>
+</html>
+
+```
 #### $_GET
+PHP $_GET 同样被广泛应用于收集表单数据，在HTML form标签的指定该属性："method="get"。
 
+$_GET 也可以收集URL中发送的数据。
+
+假定我们有一个包含参数的超链接HTML页面：
+```php
+<html>
+<body>
+
+<a href="test_get.php?subject=PHP&web=runoob.com">Test $GET</a>
+
+</body>
+</html>
+```
+
+```php
+
+<html>
+<body>
+ 
+<?php 
+echo "Study " . $_GET['subject'] . " @ " . $_GET['web'];
+?>
+ 
+</body>
+</html>
+
+```
 #### $_FILES
 
 #### $_ENV
