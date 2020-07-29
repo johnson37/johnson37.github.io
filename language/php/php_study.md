@@ -1192,3 +1192,10 @@ else
 setcookie("user", "", time()-3600);
 ?>
 ```
+
+## 数据库相关操作
+PHP 5 及以上版本建议使用以下方式连接 MySQL :
+
+- MySQLi extension ("i" 意为 improved)
+- PDO (PHP Data Objects)
+
