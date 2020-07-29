@@ -1034,3 +1034,119 @@ if(is_array($q)) {
 ?>
 
 ```
+
+### include/require
+
+在 PHP 中，您可以在服务器执行 PHP 文件之前在该文件中插入一个文件的内容。
+
+include 和 require 语句用于在执行流中插入写在其他文件中的有用的代码。
+
+include 和 require 除了处理错误的方式不同之外，在其他方面都是相同的：
+
+- require 生成一个致命错误（E_COMPILE_ERROR），在错误发生后脚本会停止执行。
+- include 生成一个警告（E_WARNING），在错误发生后脚本会继续执行。
+
+menu.php
+```php
+<?php
+echo '<a href="/">主页</a>
+<a href="/html">HTML 教程</a>
+<a href="/php">PHP 教程</a>';
+?>
+```
+
+```php
+<html>
+<head>
+<meta charset="utf-8">
+<title>菜鸟教程(runoob.com)</title>
+</head>
+<body>
+
+<div class="leftmenu">
+<?php include 'menu.php'; ?>
+</div>
+<h1>欢迎来到我的主页!</h1>
+<p>一些文本。</p>
+
+</body>
+</html>
+```
+
+### File 处理
+fopen() 函数用于在 PHP 中打开文件。
+
+此函数的第一个参数含有要打开的文件的名称，第二个参数规定了使用哪种模式来打开文件：
+```php
+<html>
+<body>
+
+<?php
+$file=fopen("welcome.txt","r");
+?>
+
+</body>
+</html> 
+```
+
+|---|---|
+|模式 |描述 |
+|r 	|只读。在文件的开头开始。 |
+|r+ |	读/写。在文件的开头开始。 |
+|w 	|只写。打开并清空文件的内容；如果文件不存在，则创建新文件。|
+|w+ 	|读/写。打开并清空文件的内容；如果文件不存在，则创建新文件。|
+|a 	|追加。打开并向文件末尾进行写操作，如果文件不存在，则创建新文件。|
+|a+ 	|读/追加。通过向文件末尾写内容，来保持文件内容。|
+|x 	|只写。创建新文件。如果文件已存在，则返回 FALSE 和一个错误。|
+|x+ 	|读/写。创建新文件。如果文件已存在，则返回 FALSE 和一个错误。|
+
+```php
+<html>
+<body>
+
+<?php
+$file=fopen("welcome.txt","r") or exit("Unable to open file!");
+?>
+
+</body>
+</html> 
+```
+
+#### 关闭文件
+```php
+<?php
+$file = fopen("test.txt","r");
+
+//执行一些代码
+
+fclose($file);
+?> 
+```
+
+#### 逐行读取文件
+
+```php
+<?php
+$file = fopen("welcome.txt", "r") or exit("无法打开文件!");
+// 读取文件每一行，直到文件结尾
+while(!feof($file))
+{
+    echo fgets($file). "<br>";
+}
+fclose($file);
+?> 
+
+```
+
+#### 逐字符读取文件
+```php
+<?php
+$file=fopen("welcome.txt","r") or exit("无法打开文件!");
+while (!feof($file))
+{
+    echo fgetc($file);
+}
+fclose($file);
+?> 
+```
+
