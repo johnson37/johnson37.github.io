@@ -1150,3 +1150,45 @@ fclose($file);
 ?> 
 ```
 
+### Cookie
+ Cookie的处理分为：
+
+- 服务器像客户端发送cookie
+- 浏览器将cookie保存
+- 之后每次http请求浏览器都会将cookie发送给服务器端
+
+#### create cookie
+```php
+<?php
+setcookie("user", "runoob", time()+3600);
+?>
+
+<html>
+.....
+```
+#### get cookie
+```php
+<html>
+<head>
+<meta charset="utf-8">
+<title>菜鸟教程(runoob.com)</title>
+</head>
+<body>
+
+<?php
+if (isset($_COOKIE["user"]))
+    echo "欢迎 " . $_COOKIE["user"] . "!<br>";
+else
+    echo "普通访客!<br>";
+?>
+
+</body>
+</html>
+```
+#### delete cookie
+```php
+<?php
+// 设置 cookie 过期时间为过去 1 小时
+setcookie("user", "", time()-3600);
+?>
+```
