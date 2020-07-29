@@ -613,7 +613,7 @@ $_SERVER 是一个包含了诸如头信息(header)、路径(path)、以及脚本
 |$_SERVER['REQUEST_TIME'] 	|请求开始时的时间戳。从 PHP 5.1.0 起可用。 (如：1377687496)|
 |$_SERVER['QUERY_STRING'] 	|query string（查询字符串），如果有的话，通过它进行页面访问。|
 |$_SERVER['HTTP_ACCEPT'] 	|当前请求头中 Accept: 项的内容，如果存在的话。|
-|$_SERVER['HTTP_ACCEPT_CHARSET'] 	|当前请求头中 Accept-Charset: 项的内容，如果存在的话。例如："iso-8859-1,*,utf-8"。|
+|$_SERVER['HTTP_ACCEPT_CHARSET'] 	|当前请求头中 Accept-Charset: 项的内容，如果存在的话。例如："iso-8859-1,utf-8"。|
 |$_SERVER['HTTP_HOST'] 	|当前请求头中 Host: 项的内容，如果存在的话。|
 |$_SERVER['HTTP_REFERER'] 	|引导用户代理到当前页的前一页的地址（如果存在）。由 user agent 设置决定。并不是所有的用户代理都会设置该项，有的还提供了修改 HTTP_REFERER 的功能。简言之，该值并不可信。)|
 |$_SERVER['HTTPS'] 	|如果脚本是通过 HTTPS 协议被访问，则被设为一个非空的值。|
@@ -712,3 +712,169 @@ echo "Study " . $_GET['subject'] . " @ " . $_GET['web'];
 #### $_COOKIE
 
 #### $_SESSION
+
+### PHP 循环
+
+#### while 循环
+```php
+while (条件)
+{
+    要执行的代码;
+}
+```
+
+```php
+<html>
+<body>
+
+<?php
+$i=1;
+while($i<=5)
+{
+    echo "The number is " . $i . "<br>";
+    $i++;
+}
+?>
+
+</body>
+</html>
+```
+#### do...while 语句
+
+```php
+do
+{
+    要执行的代码;
+}
+while (条件);
+```
+
+```php
+<html>
+<body>
+
+<?php
+$i=1;
+do
+{
+    $i++;
+    echo "The number is " . $i . "<br>";
+}
+while ($i<=5);
+?>
+
+</body>
+</html>
+
+```
+
+#### For 循环
+
+```php
+for (初始值; 条件; 增量)
+{
+    要执行的代码;
+}
+```
+
+```php
+
+<?php
+for ($i=1; $i<=5; $i++)
+{
+    echo "The number is " . $i . "<br>";
+}
+?>
+
+```
+
+#### Foreach 循环
+```php
+foreach ($array as $value)
+{
+    要执行代码;
+}
+```
+
+```php
+
+<?php
+$x=array("one","two","three");
+foreach ($x as $value)
+{
+    echo $value . "<br>";
+}
+?>
+```
+
+### 函数
+
+如要在页面加载时执行脚本，您可以把它放到函数里。
+
+函数是通过调用函数来执行的。
+
+你可以在页面的任何位置调用函数。
+
+```php
+
+<?php
+function functionName()
+{
+    // 要执行的代码
+}
+?>
+
+```
+
+```php
+function writeName()
+{
+    echo "Kai Jim Refsnes";
+}
+ 
+echo "My name is ";
+writeName();
+```
+
+#### 带参数
+```php
+
+<?php
+function writeName($fname,$punctuation)
+{
+    echo $fname . " Refsnes" . $punctuation . "<br>";
+}
+ 
+echo "My name is ";
+writeName("Kai Jim",".");
+echo "My sister's name is ";
+writeName("Hege","!");
+echo "My brother's name is ";
+writeName("Ståle","?");
+?>
+
+```
+
+#### 返回值
+
+```php
+
+<?php
+function add($x,$y)
+{
+    $total=$x+$y;
+    return $total;
+}
+ 
+echo "1 + 16 = " . add(1,16);
+?>
+
+```
+
+### PHP 魔术常量
+
+- __LINE__: 文件中的当前行号
+- __FILE__: 文件的完整路径和文件名。如果用在被包含文件中，则返回被包含的文件名。
+- __DIR__: 文件所在的目录。
+- __FUNCTION__: 函数名称（PHP 4.3.0 新加）。自 PHP 5 起本常量返回该函数被定义时的名字（区分大小写）。在 PHP 4 中该值总是小写字母的。
+- __METHOD__: 类的方法名（PHP 5.0.0 新加）。返回该方法被定义时的名字（区分大小写）。
