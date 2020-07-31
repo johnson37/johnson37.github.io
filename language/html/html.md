@@ -162,3 +162,64 @@ HTML 链接由 <a> 标签定义。链接的地址在 href 属性中指定：
 - 当网页添加到收藏夹时，显示在收藏夹中的标题
 - 显示在搜索引擎结果页面的标题
 
+### base
+
+<base> 标签描述了基本的链接地址/链接目标，该标签作为HTML文档中所有的链接标签的默认链接:
+```html
+<head>
+<base href="http://www.runoob.com/images/" target="_blank">
+</head>
+```
+
+### link
+ <link> 标签定义了文档与外部资源之间的关系。
+
+<link> 标签通常用于链接到样式表:
+
+```html
+<head>
+<link rel="stylesheet" type="text/css" href="mystyle.css">
+</head>
+```
+
+### HTML <style> 
+<style> 标签定义了HTML文档的样式文件引用地址.
+
+在<style> 元素中你也可以直接添加样式来渲染 HTML 文档:
+```html
+<head>
+<style type="text/css">
+body {background-color:yellow}
+p {color:blue}
+</style>
+</head>
+```
+
+### HTML <meta> 元素
+meta标签描述了一些基本的元数据。
+<meta> 标签提供了元数据.元数据也不显示在页面上，但会被浏览器解析。
+META 元素通常用于指定网页的描述，关键词，文件的最后修改时间，作者，和其他元数据。
+元数据可以使用于浏览器（如何显示内容或重新加载页面），搜索引擎（关键词），或其他Web服务。
+<meta> 一般放置于 <head> 区域
+
+```html
+<meta name="keywords" content="HTML, CSS, XML, XHTML, JavaScript">
+<meta name="description" content="免费 Web & 编程 教程">
+<meta name="author" content="Runoob">
+<meta http-equiv="refresh" content="30">
+```
+
+### HTML <script> 元素
+<script>标签用于加载脚本文件，如： JavaScript。
+<script> 元素在以后的章节中会详细描述。
+
+## HTML CSS
+CSS 是在 HTML 4 开始使用的,是为了更好的渲染HTML元素而引入的.
+
+CSS 可以通过以下方式添加到HTML中:
+
+- 内联样式- 在HTML元素中使用"style" 属性
+- 内部样式表 -在HTML文档头部 <head> 区域使用<style> 元素 来包含CSS
+- 外部引用 - 使用外部 CSS 文件
+
+#### 内联样式
