@@ -180,7 +180,30 @@ echo strpos("Hello world!","world");
 ?> 
 ```
 
+#### PHP strrev 函数
+```php
+<?php
+$str="Hello world";
+$result=strrev($str);
+echo $result;
+//输出的结果是：dlrow olleH;
+?> 
+
+```
+
+#### PHP 字符串切割
+```php
+$str = "Hello world. I  love Shanghai!";
+print_r (explode(" ",$str));
+```
+
+#### PHP 字符串大小写转换
+- strtoupper: 将字符串转换为大写
+- strtolower: 将字符串转换为小写
+
+
 ### 运算符
+
 #### 算术运算符
 
 - x + y 	加 	x 和 y 的和 	2 + 2 	4
@@ -533,6 +556,19 @@ foreach($age as $x=>$x_value)
 }
 ?>
 
+```
+
+##### 关联数组获取key/values
+```php
+<?php
+$a=array("Volvo"=>"XC90","BMW"=>"X5","Toyota"=>"Highlander");
+print_r(array_keys($a));
+?>
+
+<?php
+$a=array("Name"=>"Bill","Age"=>"60","Country"=>"USA");
+print_r(array_values($a));
+?>
 ```
 
 #### 多维数组 - 包含一个或多个数组的数组
@@ -1513,7 +1549,7 @@ $servername = "localhost";
 $username = "username";
 $password = "password";
 $dbname = "myDBPDO";
- 
+
 try {
     $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
     // 设置 PDO 错误模式，用于抛出异常
@@ -1534,3 +1570,9 @@ $conn = null;
 
 ```
 
+
+### Note:
+php 中如果表单没有action，默认情况下是trigger 当前php文件。
+
+
+## Session

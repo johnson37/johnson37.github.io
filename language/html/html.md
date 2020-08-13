@@ -222,4 +222,155 @@ CSS 可以通过以下方式添加到HTML中:
 - 内部样式表 -在HTML文档头部 <head> 区域使用<style> 元素 来包含CSS
 - 外部引用 - 使用外部 CSS 文件
 
-#### 内联样式
+### 内联样式
+```html
+
+<body style="background-color:yellow;">
+<h2 style="background-color:red;">这是一个标题</h2>
+<p style="background-color:green;">这是一个段落。</p>
+</body>
+
+```
+
+```html
+
+<h1 style="font-family:verdana;">一个标题</h1>
+<p style="font-family:arial;color:red;font-size:20px;">一个段落。</p>
+
+```
+
+```html
+
+<h1 style="text-align:center;">居中对齐的标题</h1>
+<p>这是一个段落。</p>
+
+```
+### 内部样式表
+
+```html
+<head>
+<style type="text/css">
+body {background-color:yellow;}
+p {color:blue;}
+</style>
+</head>
+```
+
+### 外部样式表
+
+```html
+<head>
+<link rel="stylesheet" type="text/css" href="mystyle.css">
+</head>
+```
+
+## HTML IMAGE
+
+在 HTML 中，图像由<img> 标签定义。
+<img> 是空标签，意思是说，它只包含属性，并且没有闭合标签。
+要在页面上显示图像，你需要使用源属性（src）。src 指 "source"。源属性的值是图像的 URL 地址。
+```html
+<img src="url" alt="some_text"> 
+```
+### HTML 图像- Alt属性
+ alt 属性用来为图像定义一串预备的可替换的文本。
+替换文本属性的值是用户定义的。 
+
+```html
+<img src="boat.gif" alt="Big Boat">
+```
+在浏览器无法载入图像时，替换文本属性告诉读者她们失去的信息。此时，浏览器将显示这个替代性的文本而不是图像。为页面上的图像都加上替换文本属性是个好习惯，这样有助于更好的显示信息，并且对于那些使用纯文本浏览器的人来说是非常有用的。
+
+
+### HTML 图像- 设置图像的高度与宽度
+height（高度） 与 width（宽度）属性用于设置图像的高度与宽度。属性值默认单位为像素:
+```html
+<img src="pulpit.jpg" alt="Pulpit rock" width="304" height="228">
+```
+**提示: 指定图像的高度和宽度是一个很好的习惯。如果图像指定了高度宽度，页面加载时就会保留指定的尺寸。如果没有指定图片的大小，加载页面时有可能会破坏HTML页面的整体布局。**
+
+**假如某个 HTML 文件包含十个图像，那么为了正确显示这个页面，需要加载 11 个文件。加载图片是需要时间的，所以我们的建议是：慎用图片。 **
+
+## HTML 表格
+
+## HTML 列表
+
+## HTML 区块
+
+## HTML 布局
+
+## HTML 表单
+表单是一个包含表单元素的区域。
+表单元素是允许用户在表单中输入内容,比如：文本域(textarea)、下拉列表、单选框(radio-buttons)、复选框(checkboxes)等等。
+表单使用表单标签 <form> 来设置:
+```html
+<form>
+.
+input 元素
+.
+</form>
+```
+
+### HTML 表单 - 输入元素
+#### 文本域（Text Fields）
+```html
+<form>
+First name: <input type="text" name="firstname"><br>
+Last name: <input type="text" name="lastname">
+</form> 
+```
+
+#### 密码字段
+```html
+<form>
+Password: <input type="password" name="pwd">
+</form> 
+```
+
+#### 单选按钮（Radio Buttons）
+
+```html
+<form>
+<input type="radio" name="sex" value="male">Male<br>
+<input type="radio" name="sex" value="female">Female
+</form> 
+```
+
+#### 复选框（Checkboxes）
+```html
+<form>
+<input type="checkbox" name="vehicle" value="Bike">I have a bike<br>
+<input type="checkbox" name="vehicle" value="Car">I have a car
+</form> 
+```
+
+#### 提交按钮(Submit Button)
+```html
+<form name="input" action="html_form_action.php" method="get">
+Username: <input type="text" name="user">
+<input type="submit" value="Submit">
+</form> 
+```
+
+## HTML 框架
+
+### HTML 添加背景图片
+
+#### 添加背景色
+```html
+<style>
+body
+{
+	background-color:#b0c4de;
+}
+</style>
+```
+
+```html
+<style type="text/css">
+  body {
+    background: url(main.jpg) no-repeat center center fixed;
+    background-size: cover;
+}
+</style>
+```
