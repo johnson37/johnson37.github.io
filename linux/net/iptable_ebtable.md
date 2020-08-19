@@ -419,3 +419,53 @@ int br_forward_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
 }
 
 ```
+
+## Interaction bwtween Iptables and Ebtables.
+
+Normally, ebtables rules should work in Link layer and iptables rules should work in network layer.
+Considering that if we have one bridge and link all ethernet port on this bridge, maybe packets don't need to enter 
+Network layer and forwarded by bridge directly. In order to make iptables rule work on that case, br netfilter will
+call iptables/prerouting and iptables/postrouting.
+
+The whole is as below:
+![iptables](./pic/iptables.PNG)
+
+```c
+unsigned int
+nf_nat_ipv4_fn(void *priv, struct sk_buff *skb,
+           const struct nf_hook_state *state,
+           unsigned int (*do_chain)(void *priv,
+                    struct sk_buff *skb,
+                    const struct nf_hook_state *state,
+                    struct nf_conn *ct))
+{
+    struct nf_conn *ct;
+    enum ip_conntrack_info ctinfo;
+    struct nf_conn_nat *nat;
+    /* maniptype == SRC for postrouting. */
+    enum nf_nat_manip_type maniptype = HOOK2MANIP(state->hook);
+
+    ct = nf_ct_get(skb, &ctinfo);
++---  5 lines: Can't track?  It's not due to stress, or conntrack would---------------------------------------------------------------------------------------------
+    if (!ct)
+        return NF_ACCEPT;
+
+    /* Don't try to NAT if this packet is not conntracked */
+    if (nf_ct_is_untracked(ct))
+        return NF_ACCEPT;
+
+    nat = nf_ct_nat_ext_add(ct);
+    if (nat == NULL)
+        return NF_ACCEPT;
+
++--- 45 lines: switch (ctinfo) {------------------------------------------------------------------------------------------------------------------------------------
+
+    return nf_nat_packet(ct, ctinfo, state->hook, skb);
+
+oif_changed:
+    nf_ct_kill_acct(ct, ctinfo, skb);
+    return NF_DROP;
+}
+
+nf_nat_packet
+```
