@@ -430,6 +430,40 @@ call iptables/prerouting and iptables/postrouting.
 The whole is as below:
 ![iptables](./pic/iptables.PNG)
 
+
+
+## SNAT/DNAT
+
+SNAT works on Iptables/POSTROUTING Chain.
+DNAT works on Iptables/PREROUTING Chain.
+
+### SNAT 
+SNAT needs to work on POSTROUTING.
+When we change SNAT, we can consider SNAT or MASQUERADE
+
+#### SNAT
+** All packets leaving eth1 will change source IP to 192.168.20.1 **
+iptables -t nat -A POSTROUTING -o eth1 -j SNAT --to 192.168.20.1
+
+#### MASQUERADE
+** MASQUERADE will get ip address automatically as source ip to finish SNAT **
+iptables -t nat -A POSTROUTING -o wan0 -j MASQUERADE
+
+
+### DNAT
+DNAT needs to work on PREROUTING Chain.
+
+#### DNAT
+** DNAT will change destination ip and destination port **
+iptables -t nat -A PREROUTING -d 192.168.31.168 -p tcp -m tcp --dport 80 -j DNAT --to-destination 192.168.31.167:8080
+
+#### Conntrack
+Compared with DNAT rule in iptables, we can also use conntrack to finish automatically DNAT.
+When we have one packet in one direction, conntrack will track this and analyse the reverse packet. When we receive the 
+reverse packet from another direction, conntrack can help us change destination ip and destination port.
+
+
+
 ```c
 unsigned int
 nf_nat_ipv4_fn(void *priv, struct sk_buff *skb,
