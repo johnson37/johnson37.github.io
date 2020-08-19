@@ -449,6 +449,9 @@ iptables -t nat -A POSTROUTING -o eth1 -j SNAT --to 192.168.20.1
 ** MASQUERADE will get ip address automatically as source ip to finish SNAT **
 iptables -t nat -A POSTROUTING -o wan0 -j MASQUERADE
 
+** Note: MASQUERADE will get ip address from interface, expecially for dynamic IP, for example DHCP/PPPoE**
+** MASQUERADE also need to assign source port for SNAT, Normally MASQUERADE need keep origial source port, MASQUERADE 
+will also change source port if the original source port is used. **
 
 ### DNAT
 DNAT needs to work on PREROUTING Chain.
