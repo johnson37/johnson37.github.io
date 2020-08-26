@@ -64,11 +64,13 @@
 ```
 
 ### Toast
-```java
+
+```c
 Toast.makeText(this, "O, we are given the permission", Toast.LENGTH_SHORT).show();
 ```
 ### VideoView
-```java
+
+```c
         videoview = (VideoView)findViewById(R.id.videoView);
         //String path = Environment.getExternalStorageDirectory().getPath()+"/demo.mp4";
         Uri uri = Uri.parse("https://johnson37.github.io./demo.mp4");
@@ -90,6 +92,7 @@ Toast.makeText(this, "O, we are given the permission", Toast.LENGTH_SHORT).show(
             }
         });
 ```
+
 ### ListView
 
 ```c
@@ -107,6 +110,7 @@ Toast.makeText(this, "O, we are given the permission", Toast.LENGTH_SHORT).show(
 ```
 
 ### Button
+
 - Button set click event:
 
 ```c
@@ -130,7 +134,3 @@ Toast.makeText(this, "O, we are given the permission", Toast.LENGTH_SHORT).show(
                 TextView textview = (TextView)findViewById(R.id.textView);
                 textview.setText(teacher_name);
 ```
-
-### Broadcast Receiver
-
-### Service
