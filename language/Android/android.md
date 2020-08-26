@@ -16,20 +16,25 @@
 ## Activity
 
 ## Main Class
+
 - Integer.toString(position)
 
 ### Set the applicaiton Name
+
 <string name="app_name">EEducationOL</string>
 
 ### Modify the label
+
 - Put the png pic to the related document directory:  app/src/main/res/
 - AndroidManfest.xml: android:icon="@mipmap/theme"
 
 ### Rotate the Screen
+
 <activity android:name=".VideoActivity" android:screenOrientation="sensor">
 
 ### Get the permission
-```java
+
+```c
       public int REQUESTCODE =10;
       private String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.INTERNET};
         int i = ContextCompat.checkSelfPermission(this, permissions[0]);
@@ -75,7 +80,7 @@ Toast.makeText(this, "O, we are given the permission", Toast.LENGTH_SHORT).show(
 ```
 ### RadioGroup
 
-```java
+```c
         RadioGroup mRadioGroup = (RadioGroup)findViewById(R.id.radiogroup);
         mRadioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener(){
             public void onCheckedChanged(RadioGroup arg0, int arg1) {
@@ -87,7 +92,7 @@ Toast.makeText(this, "O, we are given the permission", Toast.LENGTH_SHORT).show(
 ```
 ### ListView
 
-```java
+```c
         ArrayAdapter<String> teacherAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, Teacher.getAllTeachers());
         ListView listView = (ListView) findViewById(R.id.teacher_listView);
         listView.setAdapter(teacherAdapter);
@@ -104,7 +109,7 @@ Toast.makeText(this, "O, we are given the permission", Toast.LENGTH_SHORT).show(
 ### Button
 - Button set click event:
 
-```java
+```c
         retButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v)
             {
@@ -114,13 +119,13 @@ Toast.makeText(this, "O, we are given the permission", Toast.LENGTH_SHORT).show(
 ```
 ### Intent
 
-```java
+```c
                 Intent intent = new Intent();
                 intent.putExtra("teacher", "Johnson");
                 intent.setClass(MainActivity.this,TestActivity.class);
                 startActivity(intent);
 ```
-```java
+```c
                 String teacher_name = getIntent().getStringExtra("teacher");
                 TextView textview = (TextView)findViewById(R.id.textView);
                 textview.setText(teacher_name);
