@@ -7,6 +7,9 @@ Android Project上有两个主要的文件夹，app和gradle。
 
 ![Android Code Structure](./pic1.PNG)
 
+### Manifest.xml Style
+
+
 ## Android Debug LOG
 - Log.v("Johnson", "log content")
 - Log.d()
