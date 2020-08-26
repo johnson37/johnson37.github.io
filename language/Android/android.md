@@ -1,6 +1,8 @@
 # Android Study Note
 ## Android Environment
+
 ## Android Usage
+
 ## Android Debug LOG
 - Log.v("Johnson", "log content")
 - Log.d()
@@ -8,25 +10,25 @@
 - Log.w()
 - Log.e()
 
-### Layout
+## Layout
 - ConstraintLayout
-- 
-### Activity
+ 
+## Activity
 
-### Main Class
+## Main Class
 - Integer.toString(position)
 
-#### Set the applicaiton Name
+### Set the applicaiton Name
 <string name="app_name">EEducationOL</string>
 
-#### Modify the label
+### Modify the label
 - Put the png pic to the related document directory:  app/src/main/res/
 - AndroidManfest.xml: android:icon="@mipmap/theme"
 
-#### Rotate the Screen
+### Rotate the Screen
 <activity android:name=".VideoActivity" android:screenOrientation="sensor">
 
-#### Get the permission
+### Get the permission
 ```java
       public int REQUESTCODE =10;
       private String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.INTERNET};
@@ -56,11 +58,11 @@
     }
 ```
 
-#### Toast
+### Toast
 ```java
 Toast.makeText(this, "O, we are given the permission", Toast.LENGTH_SHORT).show();
 ```
-#### VideoView
+### VideoView
 ```java
         videoview = (VideoView)findViewById(R.id.videoView);
         //String path = Environment.getExternalStorageDirectory().getPath()+"/demo.mp4";
@@ -71,7 +73,8 @@ Toast.makeText(this, "O, we are given the permission", Toast.LENGTH_SHORT).show(
         videoview.requestFocus();
         videoview.start();
 ```
-#### RadioGroup
+### RadioGroup
+
 ```java
         RadioGroup mRadioGroup = (RadioGroup)findViewById(R.id.radiogroup);
         mRadioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener(){
@@ -82,7 +85,8 @@ Toast.makeText(this, "O, we are given the permission", Toast.LENGTH_SHORT).show(
             }
         });
 ```
-#### ListView
+### ListView
+
 ```java
         ArrayAdapter<String> teacherAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, Teacher.getAllTeachers());
         ListView listView = (ListView) findViewById(R.id.teacher_listView);
@@ -97,8 +101,9 @@ Toast.makeText(this, "O, we are given the permission", Toast.LENGTH_SHORT).show(
         });
 ```
 
-#### Button
+### Button
 - Button set click event:
+
 ```java
         retButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v)
@@ -107,7 +112,8 @@ Toast.makeText(this, "O, we are given the permission", Toast.LENGTH_SHORT).show(
 
         });
 ```
-#### Intent
+### Intent
+
 ```java
                 Intent intent = new Intent();
                 intent.putExtra("teacher", "Johnson");
