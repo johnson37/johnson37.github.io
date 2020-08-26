@@ -453,6 +453,237 @@ iptables -t nat -A POSTROUTING -o wan0 -j MASQUERADE
 ** MASQUERADE also need to assign source port for SNAT, Normally MASQUERADE need keep origial source port, MASQUERADE 
 will also change source port if the original source port is used. **
 
+##### MASQUERADE Source Code
+MASQUERADE Task 1: get ip address for SNAT
+MASQUERADE Task 2: source port map to xxx.
+
+```c
+static int __init masquerade_tg_init(void)
+{
+    int ret;
+
+    ret = xt_register_target(&masquerade_tg_reg);
+
+    if (ret == 0)
+        nf_nat_masquerade_ipv4_register_notifier();
+
+    return ret;
+}
+
+static struct xt_target masquerade_tg_reg __read_mostly = {
+    .name       = "MASQUERADE",
+    .family     = NFPROTO_IPV4,
+    .target     = masquerade_tg,
+    .targetsize = sizeof(struct nf_nat_ipv4_multi_range_compat),
+    .table      = "nat",
+    .hooks      = 1 << NF_INET_POST_ROUTING,
+    .checkentry = masquerade_tg_check,
+    .me     = THIS_MODULE,
+};
+
+static unsigned int
+masquerade_tg(struct sk_buff *skb, const struct xt_action_param *par)
+{
+    struct nf_nat_range range;
+    const struct nf_nat_ipv4_multi_range_compat *mr;
+
+    mr = par->targinfo;
+    range.flags = mr->range[0].flags;
+    range.min_proto = mr->range[0].min;
+    range.max_proto = mr->range[0].max;
+
+    return nf_nat_masquerade_ipv4(skb, par->hooknum, &range, par->out);
+}
+
+unsigned int
+nf_nat_masquerade_ipv4(struct sk_buff *skb, unsigned int hooknum,
+               const struct nf_nat_range *range,
+               const struct net_device *out)
+{
+    ct = nf_ct_get(skb, &ctinfo);
+    nat = nfct_nat(ct);
+
+    NF_CT_ASSERT(ct && (ctinfo == IP_CT_NEW || ctinfo == IP_CT_RELATED ||
+                ctinfo == IP_CT_RELATED_REPLY));
+
+    /* Source address is 0.0.0.0 - locally generated packet that is
+     * probably not supposed to be masqueraded.
+     */
+    if (ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple.src.u3.ip == 0)
+        return NF_ACCEPT;
+
+    rt = skb_rtable(skb);
+    nh = rt_nexthop(rt, ip_hdr(skb)->daddr);
+    newsrc = inet_select_addr(out, nh, RT_SCOPE_UNIVERSE);
+    if (!newsrc) {
+        pr_info("%s ate my IP address\n", out->name);
+        return NF_DROP;
+    }
+
+    nat->masq_index = out->ifindex;
+
+    /* Transfer from original range. */
+    memset(&newrange.min_addr, 0, sizeof(newrange.min_addr));
+    memset(&newrange.max_addr, 0, sizeof(newrange.max_addr));
+    newrange.flags       = range->flags | NF_NAT_RANGE_MAP_IPS;
+    newrange.min_addr.ip = newsrc;
+    newrange.max_addr.ip = newsrc;
+    newrange.min_proto   = range->min_proto;
+    newrange.max_proto   = range->max_proto;
+
+    /* Hand modified range to generic setup. */
+    return nf_nat_setup_info(ct, &newrange, NF_NAT_MANIP_SRC);
+
+}
+
+unsigned int
+nf_nat_setup_info(struct nf_conn *ct,
+          const struct nf_nat_range *range,
+          enum nf_nat_manip_type maniptype)
+{
+    struct net *net = nf_ct_net(ct);
+    struct nf_conntrack_tuple curr_tuple, new_tuple;
+    struct nf_conn_nat *nat;
+
+    /* nat helper or nfctnetlink also setup binding */
+    nat = nf_ct_nat_ext_add(ct);
+    if (nat == NULL)
+        return NF_ACCEPT;
+
+    NF_CT_ASSERT(maniptype == NF_NAT_MANIP_SRC ||
+             maniptype == NF_NAT_MANIP_DST);
+    BUG_ON(nf_nat_initialized(ct, maniptype));
+
+    /* What we've got will look like inverse of reply. Normally
+     * this is what is in the conntrack, except for prior
+     * manipulations (future optimization: if num_manips == 0,
+     * orig_tp = ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple)
+     */
+    nf_ct_invert_tuplepr(&curr_tuple,
+                 &ct->tuplehash[IP_CT_DIR_REPLY].tuple);
+
+    get_unique_tuple(&new_tuple, &curr_tuple, range, ct, maniptype);
+
+    if (!nf_ct_tuple_equal(&new_tuple, &curr_tuple)) {
+        struct nf_conntrack_tuple reply;
+
+        /* Alter conntrack table so will recognize replies. */
+        nf_ct_invert_tuplepr(&reply, &new_tuple);
+        nf_conntrack_alter_reply(ct, &reply);
+
+        /* Non-atomic: we own this at the moment. */
+        if (maniptype == NF_NAT_MANIP_SRC)
+            ct->status |= IPS_SRC_NAT;
+        else
+            ct->status |= IPS_DST_NAT;
+        if (nfct_help(ct))
+            nfct_seqadj_ext_add(ct);
+    }
+
+    if (maniptype == NF_NAT_MANIP_SRC) {
+        unsigned int srchash;
+
+        srchash = hash_by_src(net,
+                      &ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple);
+        spin_lock_bh(&nf_nat_lock);
+        /* nf_conntrack_alter_reply might re-allocate extension aera */
+        nat = nfct_nat(ct);
+        nat->ct = ct;
+        hlist_add_head_rcu(&nat->bysource,
+                   &net->ct.nat_bysource[srchash]);
+        spin_unlock_bh(&nf_nat_lock);
+    }
+
+    /* It's done. */
+    if (maniptype == NF_NAT_MANIP_DST)
+        ct->status |= IPS_DST_NAT_DONE;
+    else
+        ct->status |= IPS_SRC_NAT_DONE;
+
+    return NF_ACCEPT;
+}
+
+/* Manipulate the tuple into the range given. For NF_INET_POST_ROUTING,
+ * we change the source to map into the range. For NF_INET_PRE_ROUTING
+ * and NF_INET_LOCAL_OUT, we change the destination to map into the
+ * range. It might not be possible to get a unique tuple, but we try.
+ * At worst (or if we race), we will end up with a final duplicate in
+ * __ip_conntrack_confirm and drop the packet. */
+static void
+get_unique_tuple(struct nf_conntrack_tuple *tuple,
+         const struct nf_conntrack_tuple *orig_tuple,
+         const struct nf_nat_range *range,
+         struct nf_conn *ct,
+         enum nf_nat_manip_type maniptype)
+{
+    const struct nf_conntrack_zone *zone;
+    const struct nf_nat_l3proto *l3proto;
+    const struct nf_nat_l4proto *l4proto;
+    struct net *net = nf_ct_net(ct);
+
+    zone = nf_ct_zone(ct);
+
+    rcu_read_lock();
+    l3proto = __nf_nat_l3proto_find(orig_tuple->src.l3num);
+    l4proto = __nf_nat_l4proto_find(orig_tuple->src.l3num,
+                    orig_tuple->dst.protonum);
+
+    /* 1) If this srcip/proto/src-proto-part is currently mapped,
+     * and that same mapping gives a unique tuple within the given
+     * range, use that.
+     *
+     * This is only required for source (ie. NAT/masq) mappings.
+     * So far, we don't do local source mappings, so multiple
+     * manips not an issue.
+     */
+    if (maniptype == NF_NAT_MANIP_SRC &&
+        !(range->flags & NF_NAT_RANGE_PROTO_RANDOM_ALL)) {
+        /* try the original tuple first */
+        if (in_range(l3proto, l4proto, orig_tuple, range)) {
+            if (!nf_nat_used_tuple(orig_tuple, ct)) {
+                *tuple = *orig_tuple;
+                goto out;
+            }
+        } else if (find_appropriate_src(net, zone, l3proto, l4proto,
+                        orig_tuple, tuple, range)) {
+            pr_debug("get_unique_tuple: Found current src map\n");
+            if (!nf_nat_used_tuple(tuple, ct))
+                goto out;
+        }
+    }
+
+    /* 2) Select the least-used IP/proto combination in the given range */
+    *tuple = *orig_tuple;
+    find_best_ips_proto(zone, tuple, range, ct, maniptype);
+
+    /* 3) The per-protocol part of the manip is made to map into
+     * the range to make a unique tuple.
+     */
+
+    /* Only bother mapping if it's not already in range and unique */
+    if (!(range->flags & NF_NAT_RANGE_PROTO_RANDOM_ALL)) {
+        if (range->flags & NF_NAT_RANGE_PROTO_SPECIFIED) {
+            if (l4proto->in_range(tuple, maniptype,
+                          &range->min_proto,
+                          &range->max_proto) &&
+                (range->min_proto.all == range->max_proto.all ||
+                 !nf_nat_used_tuple(tuple, ct)))
+                goto out;
+        } else if (!nf_nat_used_tuple(tuple, ct)) {
+            goto out;
+        }
+    }
+
+    /* Last change: get protocol to try to obtain unique tuple. */
+    l4proto->unique_tuple(l3proto, tuple, range, maniptype, ct);
+out:
+    rcu_read_unlock();
+}
+
+```
+
+
+
 ### DNAT
 DNAT needs to work on PREROUTING Chain.
 
