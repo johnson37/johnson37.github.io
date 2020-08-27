@@ -9,6 +9,39 @@ Android Project上有两个主要的文件夹，app和gradle。
 
 ### Manifest.xml Style
 
+#### AndroidManifest.xml Example
+```c
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.johnsonz.myapplication">
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/theme"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".TestActivity" />
+        <activity
+            android:name=".VideoActivity"
+            android:screenOrientation="sensor" />
+        <activity android:name=".SurfaceVideo" />
+        <activity android:name=".socket"></activity>
+    </application>
+
+</manifest>
+```
 
 ## Android Debug LOG
 - Log.v("Johnson", "log content")
