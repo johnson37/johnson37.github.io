@@ -110,6 +110,29 @@ project中创建的第一个activity就是主Activity。Android Studio是通过�
         </activity>
 ```
 
+### Android Activity States
+- running: 可见，可交互
+- pause: 可见，不可交互
+- stopped: 不可见，不可交互
+- killed: activity处于暂停或停止状态，若内存不足，从内存中删除；
+
+### Activity switch
+- 生成一个意图对象 Intent
+- 调用setClass方法设置所要启动的Activity
+- 调用startActivity方法启动Activity
+```c
+    public void onClick(View v) {
+        Intent intent = new Intent();
+        //intent.putExtra("teacher", "Johnson");
+        intent.setClass(MainActivity.this,socket.class);
+        startActivity(intent);
+    }
+```
+Activity Switch中activity的活动周期，原activity切换成pause状态，并压入activity的堆栈，新的activity create出来并成为running状态。当我们回退的时候，
+新的activity会被destroy掉，原来成为pause的activity重新成为running状态。
+
+![activity_switch](./activity.png)
+
 ## Main Class
 
 - Integer.toString(position)
