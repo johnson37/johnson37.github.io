@@ -8,6 +8,28 @@ Android Project上有两个主要的文件夹，app和gradle。
 ![Android Code Structure](./pic1.PNG)
 
 ### Manifest.xml Style
+Manifest 主框架是一个application，application下有application的属性，application就是我们整个应用的系统设置，application下有各个activity，activity
+ 的level等同于页面的level。
+#### Android 设置名字
+```c
+<application
+android:label="@string/app_name"
+</application>
+
+```
+在res values string.xml 中储存了字符串string
+```c
+<resources>
+    <string name="app_name">EEducationOL</string>
+</resources>
+```
+
+#### Android 设置图标
+```c
+<application
+	android:icon="@mipmap/theme"
+</application>
+```
 
 #### AndroidManifest.xml Example
 ```c
@@ -54,6 +76,23 @@ Android Project上有两个主要的文件夹，app和gradle。
 - ConstraintLayout
  
 ## Activity
+Activity 是Android中的一个重要概念，Activity代表一个页面。
+
+### Create one Activity
+** new --> Activity --> xxx Activity**
+在xxx activity中设置activity的名字，以及对应的layout。对应的layout会默认生成在res-- layout -- xxx.xml
+
+新创的activity会默认创建onCreate Function.
+```c
+public class test extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_test2);
+    }
+}
+```
 
 ## Main Class
 
