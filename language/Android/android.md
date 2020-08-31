@@ -307,3 +307,66 @@ Activity 需要ServiceConnection 去获取binder，进而获取到service。
 
 如果任务只在应用程序与用户有交互的情况下产生，并且任务很占时间或者会引起阻塞，则另起thread或者HandlerThread。
 如果在应用程序与用户无交互的情况下仍需处理任务，那么用service，因为service是在后台运行的，同时仍要注意是否需要在service中另开thread。
+
+## Thread
+
+## UI
+
+### 基本的UI控件
+Android的SDK定义了一个View类，他是所有Android控件和容器类的父类。
+- View: Android所有控件的顶层基类。
+- ViewGroup: View的子类，代表一个view的容器，可以存放其他View对象。
+- TextView：是View的子类，用于展示基本的文本。
+- 
+
+### 布局
+
+### Note
+
+#### 如何去掉App上方的actionbar
+在res-> style.xml, 修改AppTheme
+Default:
+```c
+<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+```
+Modify
+```c
+<style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+```
+
+主要去掉标题栏后，屏幕上方还会有一块长条，需要通过全屏的方式去掉。
+** 全屏的设置要在setContentView之前。**
+```c
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        setContentView(R.layout.activity_main);
+```
+
+#### 如何降低图片的像素。
+Win10中默认绘图软件--Edit -- Resize -- 调整。
+
+#### EditText 如何使得密码不可见。
+```c
+android:inputType="textPassword"
+```
+
+## Android 与后台通信。
+
+## Android 拍照
+APP 进行拍照分成两类方法，
+- 调用应用自带的拍照app来进行拍照
+- 设置自己的拍照功能。设置自己的拍照功能更灵活一点。
+
+
+## Anroid 语音识别
+
+### Notes
+
+#### Log 添加参数
+
+Android采用的是Java的语法，数字和string相加，会自动转换成String类型。
+```c
+Log.i("Johnson", "open camera type: "+ currentCameraType);
+```
