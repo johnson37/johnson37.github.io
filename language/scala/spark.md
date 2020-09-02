@@ -316,3 +316,6 @@ Mesos的调度模式分为两种：粗粒度模式和细粒度模式
 
 ### Spark 架构
 ![spark structure](./Spark_structure.PNG)
+
+### Spark 生态
+![Spark shengtai](./shengtai.PNG)
