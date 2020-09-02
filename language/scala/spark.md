@@ -275,7 +275,23 @@ object NetworkWordCount {
 }
 ```
 
-### 集群管理器
+
+
+
+### Spark 生态
+![Spark shengtai](./shengtai.PNG)
+
+从生态图上，Spark系统构成有几个主要因素：
+
+1. Spark 设计的基于不同场景的库，包括流，数据库，ML，图像，
+2. Spark 自带的Spark Core
+3. 大数据的资源调度器，资源调度器，可以使用Spark自带的Standalone，也可以使用三方的Hadoop YARN，Apache Mesos
+4. 文件系统，Spark没有自己的分布式文件系统，需要三方的分布式文件系统，HDFS, S3
+ 
+### Spark 架构
+![spark structure](./Spark_structure.PNG)
+
+### Spark 集群管理器
 一、独立集群管理器
 
 Spark独立集群管理器提供的在集群上运行应用的简单方法。要使用集群启动脚本，按照以下步骤执行即可：
@@ -314,8 +330,5 @@ Mesos的调度模式分为两种：粗粒度模式和细粒度模式
 (1) --executor-memory 设置每个执行器的资源
 (2) --total-executor-cores 设置应用占用的核心数
 
-### Spark 架构
-![spark structure](./Spark_structure.PNG)
-
-### Spark 生态
-![Spark shengtai](./shengtai.PNG)
+### Spark 持久化
+[持久化](https://zhuanlan.zhihu.com/p/61555283)
