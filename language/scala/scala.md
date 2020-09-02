@@ -170,3 +170,6 @@ val VariableName : DataType [=  Initial Value]
 var myVar = 10;
 val myVal = "Hello, Scala!";
 ```
+
+### Scala 特殊字符的用法
+![special character](https://blog.csdn.net/lukabruce/article/details/81741588)
