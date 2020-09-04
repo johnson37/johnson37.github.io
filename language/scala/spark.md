@@ -290,6 +290,7 @@ object NetworkWordCount {
  
 ### Spark 架构
 ![spark structure](./Spark_structure.PNG)
+![spark_mechnism](./spark_mechnism.PNG)
 
 ### Spark 集群管理器
 一、独立集群管理器
@@ -332,3 +333,28 @@ Mesos的调度模式分为两种：粗粒度模式和细粒度模式
 
 ### Spark 持久化
 [持久化](https://zhuanlan.zhihu.com/p/61555283)
+
+### Spark 提交
+#### Spark 可以启动在Spark-shell中，进行提交。
+./spark-shell --master spark://node1:7077
+./spark-shell --master spark://node1:7077 --executor-memory 512m --total-executor-cores 2
+
+#### Spark也可以通过spark-submit直接调用应用程序的jar包来进行提交。
+spark-submit --master spark://XXXX:7077 （指明master地址） --class org.apache.spark.examples.SparkPi （指明主程序的名字） /XXXX/spark/examples/jars/spark-examples_2.11-2.1.0.jar（指明jar包地址） 100（指明运行次数）
+./spark-submit --driver-memory 512m --executor-memory 512m --master spark://node1:7077 --class org.apache.spark.examples.SparkPi ../examples/jars/spark-examples_2.12-3.0.0.jar 10
+
+### Spark 性能调优
+
+#### 调节并行度
+[并行度](https://juejin.im/post/6844903856753606664)
+
+#### 数据倾斜
+##### 什么是数据倾斜
+绝大多数task执行得都非常快，但个别task执行极慢。比如，总共有1000个task，997个task都在1分钟之内执行完了，但是剩余两三个task却要一两个小时。这种情况很常见。
+数据倾斜的原理很简单：在进行shuffle的时候，必须将各个节点上相同的key拉取到某个节点上的一个task来进行处理，比如按照key进行聚合或join等操作。
+此时如果某个key对应的数据量特别大的话，就会发生数据倾斜。比如大部分key对应10条数据，
+但是个别key却对应了100万条数据，那么大部分task可能就只会分配到10条数据，然后1秒钟就运行完了；
+但是个别task可能分配到了100万数据，要运行一两个小时。因此，整个Spark作业的运行进度是由运行时间最长的那个task决定的。
+
+数据倾斜只会发生在shuffle过程中。这里给大家罗列一些常用的并且可能会触发shuffle操作的算子：distinct、groupByKey、reduceByKey、aggregateByKey、join、cogroup、repartition等。出现数据倾斜时，可能就是你的代码中使用了这些算子中的某一个所导致的。
+
