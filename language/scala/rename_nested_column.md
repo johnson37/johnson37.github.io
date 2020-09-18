@@ -87,3 +87,9 @@ val old_columns = Seq("dob","gender","salary","fname","mname","lname")
     val df5 = df4.select(columnsList:_*)
     df5.printSchema()
 ```
+
+## Step 7: Using toDF() – To change all columns in a Spark DataFrame
+```scala
+val newColumns = Seq("newCol1","newCol2","newCol3")
+val df = df.toDF(newColumns:_*)
+```
