@@ -24,22 +24,22 @@ val df = spark.createDataFrame(spark.sparkContext.parallelize(data),schema)
 ```
 
 ## Step 1 To change column DataType
-```
+```scala
 df.withColumn("salary",col("salary").cast("Integer"))
 ```
 
 ## Step 2 Change the value of an existing column
 
-```
+```scala
 df.withColumn("salary",col("salary")*100)
 ```
 
 ## Step 3 Derive new column from an existing column
-```
+```scala
 df.withColumn("CopiedColumn",col("salary")* -1)
 ```
 ## Step 4  Add a new column
-```
+```scala
 df.withColumn("Country", lit("USA"))
 
 //chaining to operate on multiple columns
@@ -47,11 +47,11 @@ df.withColumn("Country", lit("USA"))
    .withColumn("anotherColumn",lit("anotherValue"))
 ```
 ## Step 5 Rename DataFrame column name
-```
+```scala
 df.withColumnRenamed("gender","sex")
 ```
 
 ## Step 6 Drop a column from Spark DataFrame
-```
+```scala
 df.drop("CopiedColumn")
 ```
