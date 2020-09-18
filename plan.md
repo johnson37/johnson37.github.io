@@ -3,9 +3,9 @@
 ## Personal Plan
 
 ### English Listening
-### Oral English
-### Basic Japanese
+
 ### Python Project
+
 ### Economic Plan
 - 定期
 - 活期
