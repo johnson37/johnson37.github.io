@@ -58,3 +58,10 @@ val spark:SparkSession = SparkSession.builder()
     println(firstName+","+middleName+","+lastName+","+salary)
   })
 ```
+
+
+      val ivBeans = if (ivDatasets.size > 0) {
+        persistent(Seq(mergeIVDatasets(ivDatasets: _*)), save, nid.get, None, DatasetType.IV)
+      } else {
+        Nil
+      }

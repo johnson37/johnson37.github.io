@@ -136,6 +136,12 @@ project中创建的第一个activity就是主Activity。Android Studio是通过�
         startActivity(intent);
     }
 ```
+##### Method 2
+```
+                Intent intent = new Intent(this, Register.class);
+                startActivity(intent);
+```
+
 Activity Switch中activity的活动周期，原activity切换成pause状态，并压入activity的堆栈，新的activity create出来并成为running状态。当我们回退的时候，
 新的activity会被destroy掉，原来成为pause的activity重新成为running状态。
 
@@ -321,7 +327,8 @@ Android的SDK定义了一个View类，他是所有Android控件和容器类的�
 
 ### 布局
 
-### Note
+#### How to use dp/sp for margin
+sp for font sizes, dp for everything else. sp stands for Scale-independent Pixels, dp stands for dip=density independent pixels.
 
 #### 如何去掉App上方的actionbar
 在res-> style.xml, 修改AppTheme
@@ -796,4 +803,29 @@ public class CameraActivity extends Activity {
 Android采用的是Java的语法，数字和string相加，会自动转换成String类型。
 ```c
 Log.i("Johnson", "open camera type: "+ currentCameraType);
+```
+
+## Error Fix
+### Didn't find class Error inflating class android.support.design.widget.BottomNavigationView
+
+[Solution](https://stackoverflow.com/questions/45672547/didnt-find-class-error-inflating-class-android-support-design-widget-bottomnavi)
+
+### Frame & Navigate
+
+[Solution](https://medium.com/@oluwabukunmi.aluko/bottom-navigation-view-with-fragments-a074bfd08711)
+
+### Check permission in fragments
+[Solution](https://stackoverflow.com/questions/40760625/how-to-check-permission-in-fragment)
+```java
+if (ActivityCompat.checkSelfPermission(getContext(),
+            android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(getContext(),
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+         requestPermissions(getActivity(),
+                new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION},
+                REQUEST_LOCATION);
+    } else {
+        Log.e("DB", "PERMISSION GRANTED");
+    }
 ```
