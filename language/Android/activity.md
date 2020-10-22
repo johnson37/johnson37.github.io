@@ -1,7 +1,7 @@
-### Activity
+# Activity
 Activity 是Android中的一个重要概念，Activity代表一个页面。
 
-#### Create one Activity
+## Create one Activity
 ** new --> Activity --> xxx Activity**
 在xxx activity中设置activity的名字，以及对应的layout。对应的layout会默认生成在res-- layout -- xxx.xml
 
@@ -17,7 +17,7 @@ public class test extends AppCompatActivity {
 }
 ```
 
-#### Android main activity
+## Android main activity
 一个Android应用会有多个activity页面，页面之间是通过跳转完成的，但是Android需要一个入口Activity。通常情况下， Android Studio在
 project中创建的第一个activity就是主Activity。Android Studio是通过下面的语法实现的：
 
@@ -33,13 +33,13 @@ project中创建的第一个activity就是主Activity。Android Studio是通过�
         </activity>
 ```
 
-#### Android Activity States
+## Android Activity States
 - running: 可见，可交互
 - pause: 可见，不可交互
 - stopped: 不可见，不可交互
 - killed: activity处于暂停或停止状态，若内存不足，从内存中删除；
 
-#### Activity switch
+## Activity switch
 - 生成一个意图对象 Intent
 - 调用setClass方法设置所要启动的Activity
 - 调用startActivity方法启动Activity
@@ -52,7 +52,7 @@ project中创建的第一个activity就是主Activity。Android Studio是通过�
         startActivity(intent);
     }
 ```
-##### Method 2
+### Method 2
 ```
     Intent intent = new Intent(this, Register.class);
     startActivity(intent);
