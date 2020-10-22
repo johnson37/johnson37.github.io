@@ -67,6 +67,9 @@ android:label="@string/app_name"
 ## Android Debug LOG
 [Android Debug Log](./debug_log.md)
 
+## Android Version
+![Android_version](Android_version.PNG)
+
 ## Layout
 [layout](./Layout.md)
 
