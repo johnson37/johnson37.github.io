@@ -95,3 +95,5 @@ Android中有四大组件，activity, service，content provider, broadcast rece
 ## Misc
 [misc](./misc.md)
 
+## permission
+[Permission](./permission.md)
