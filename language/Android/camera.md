@@ -1,5 +1,29 @@
 # Camera 
 
+## Xml
+```
+        <SurfaceView
+            android:id = "@+id/camera_surfaceView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <Button
+            android:id="@+id/camera_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/circle"
+            app:layout_constraintVertical_bias="0.9"
+         />
+```
+
+## Code
 ```java
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {

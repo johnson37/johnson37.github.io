@@ -15,7 +15,6 @@ Manifest 主框架是一个application，application下有application的属性�
 <application
 android:label="@string/app_name"
 </application>
-
 ```
 在res values string.xml 中储存了字符串string
 ```c
@@ -66,11 +65,7 @@ android:label="@string/app_name"
 ```
 
 ## Android Debug LOG
-- Log.v("Johnson", "log content")
-- Log.d()
-- Log.i()
-- Log.w()
-- Log.e()
+[Android Debug Log](./debug_log.md)
 
 ## Layout
 - ConstraintLayout
@@ -805,7 +800,20 @@ Android采用的是Java的语法，数字和string相加，会自动转换成Str
 Log.i("Johnson", "open camera type: "+ currentCameraType);
 ```
 
+## Android SMS Sending
+
+### Android MD5 生成方法
+[MD5生成方法](https://www.123si.org/android/article/android-gets-sha1-and-md5-values/)
+6F:11:A1:DA:CF:32:12:15:42:C7:C5:F6:37:8B:52:01
+
+### SMS API Info
+```
+APP KEY:31231d4349caa
+App Secret:980604391d18959312bbb40c492703f1
+```
+
 ## Error Fix
+
 ### Didn't find class Error inflating class android.support.design.widget.BottomNavigationView
 
 [Solution](https://stackoverflow.com/questions/45672547/didnt-find-class-error-inflating-class-android-support-design-widget-bottomnavi)
@@ -829,3 +837,4 @@ if (ActivityCompat.checkSelfPermission(getContext(),
         Log.e("DB", "PERMISSION GRANTED");
     }
 ```
+
