@@ -68,7 +68,7 @@ android:label="@string/app_name"
 [Android Debug Log](./debug_log.md)
 
 ## Layout
-- ConstraintLayout
+[layout](./Layout.md)
 
 ## Component
 Android中有四大组件，activity, service，content provider, broadcast receiver.
@@ -133,8 +133,8 @@ project中创建的第一个activity就是主Activity。Android Studio是通过�
 ```
 ##### Method 2
 ```
-                Intent intent = new Intent(this, Register.class);
-                startActivity(intent);
+    Intent intent = new Intent(this, Register.class);
+    startActivity(intent);
 ```
 
 Activity Switch中activity的活动周期，原activity切换成pause状态，并压入activity的堆栈，新的activity create出来并成为running状态。当我们回退的时候，
