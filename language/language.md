@@ -6,3 +6,4 @@
 - [php](./php/index.md)
 - [Android](./Android/android.md)
 - [Spark](./scala/spark.md)
+- [Swift](./swift/swift.md)
