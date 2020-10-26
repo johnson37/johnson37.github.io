@@ -1,12 +1,5 @@
 # Misc
 
-## AppleID 
-Email: zzhen201@126.com
-Password: 073736abC
-
-## XCode Download
-[Xcode Download](https://developer.apple.com/download/more/)
-Xcode 10.2.1
 
 ## How to check one variable's type
 

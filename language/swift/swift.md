@@ -16,12 +16,29 @@ let myConstant = 42
 let optionalInt: Int? = 9
 ```
 
+### Option Example
+```swift
+print (type(of: Int("10")))
+```
+The return value type is "Optional<Int>"
+
+Once you’re sure that the optional does contain a value, you can access its underlying value by adding an exclamation point (!) to the end of the optional’s name. 
+
 ## 数组
 ```swift
 var ratingList = ["Poor", "Fine", "Good", "Excellent"]
 ratingList[1] = "OK"
 ratingList
 ```
+### Map
+```swift
+let cast = ["Vivien", "Marlon", "Kim", "Karl"]
+let lowercaseNames = cast.map { $0.lowercased() }
+// 'lowercaseNames' == ["vivien", "marlon", "kim", "karl"]
+let letterCounts = cast.map { $0.count }
+// 'letterCounts' == [6, 6, 3, 4]
+```
+
 
 ### 初始化数组
 ```swift
