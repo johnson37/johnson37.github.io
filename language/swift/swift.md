@@ -39,6 +39,13 @@ let letterCounts = cast.map { $0.count }
 // 'letterCounts' == [6, 6, 3, 4]
 ```
 
+### Reduce
+```swift
+let numbers = [1, 2, 3, 4]
+let numberSum = numbers.reduce(0, { x, y in
+    x + y
+})
+```
 
 ### 初始化数组
 ```swift
@@ -65,6 +72,13 @@ var optionalName: String? = "John Appleseed"
 var greeting = "Hello!"
 if let name = optionalName {
     greeting = "Hello, \(name)"
+}
+```
+
+### 问号表达式
+```swift
+func evenOrOdd(_ number:Int) -> String {
+  return number % 2 == 0 ? "Even" : "Odd"
 }
 ```
 
@@ -126,6 +140,65 @@ if exampleString.hasSuffix("lo") {
 }
 ```
 
+## Optional 的用法
+```swift
+var cnt: Int?
+
+if let num = cnt {
+    print("num is \(num)")
+}
+else
+{
+    print("cnt is not one Int")
+}
+
+```
+
+## 类型转换
+### as
+as: Guaranteed conversion、 Upcasting
+** 字面理解就是有保证的转换，从派生类转换为基类的向上转型 **
+```swift
+// 将1转成float
+let num = 1 as CGFloat
+|------------------------
+// dog转换到父类animal
+class Animal {}
+class Dog: Animal {}
+let d = Dog()
+d as Animal  
+```
+### as?
+as? : *** Optional、 Nil***
+```swift
+// Dog、Cat和Animal的转换关系
+class Animal {}
+class Cat: Animal {}
+class Dog: Animal {
+    var name = "Spot"
+}
+let dog: Dog? = nil
+dog?.name       // 选择调用，返回空值nil
+dog!.name       // 强行调用，报错
+let animal: Animal = Cat()
+animal as? Dog  // 猫转狗失败，返回nil
+animal as! Dog  // 猫强行转狗，失败报错
+```
+### as!
+向下类型转换
+```swift
+// Dog到Animal的转化
+class Animal {}
+class Dog: Animal {}
+let a: Animal = Dog()
+a as Dog        // as不能将a转成Dog，即不能向下转换
+a as! Dog   // as！能强行将a转成Dog -> Bingo   
+```
+
+### Function 中的_
+
+如果您不希望用户输入变量名称，则只需使用下划线。例如，func foo(x: Int, y: Int)被称为foo(6, y: 10)，因此如果您不希望任何调用函数的人必须编写y，您将创建函数func foo(x: Int, _ y: Int)。
+如果添加下划线，表明在函数调用时，可以不写形参
 
 ## 内连函数
 [String](https://developer.apple.com/documentation/swift/string)
@@ -136,3 +209,10 @@ if exampleString.hasSuffix("lo") {
 ## Xcode Version
 [Xcode Version](https://developer.apple.com/support/xcode/)
 [IOS - IPhone](https://www.sohu.com/a/254404579_524654)
+
+
+## ToDesk
+
+ID: 286 067 586
+临时密码：415378
+
