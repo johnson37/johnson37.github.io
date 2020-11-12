@@ -11,3 +11,6 @@ Xcode 10.2.1
 ## MAC Speed
 [MAC Speed](https://cleanmymac.com/zh/how-to-speed-up-slow-mac)
 
+## Mac Developer Mode
+DevToolsSecurity -status
+DevToolsSecurity -enable
