@@ -5,6 +5,5 @@
 - [html](./html/index.md)
 - [php](./php/index.md)
 - [Android](./Android/android.md)
+- [ios](./ios/index.md)
 - [Spark](./scala/spark.md)
-- [Swift](./swift/swift.md)
-- [Object-c](./object-c/object-c.md)

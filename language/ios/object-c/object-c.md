@@ -36,4 +36,6 @@ Object-c:
 
 方法前面的 +/- 号代表函数的类型：加号（+）代表类方法（class method），不需要实例就可以调用，与C++ 的静态函数（static member function）相似。减号（-）即是一般的实例方法（instance method）。
 
+### xiahuaxian
+property 声明变量时，会生成setter，getter和一个带——前缀的变量。
 
