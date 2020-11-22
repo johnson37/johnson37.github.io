@@ -9,6 +9,18 @@ UItextField * test = [ UItextField alloc] init ];
 test.secureTextEntry = YES;
 ```
 
+### textField 透明色
+```objc
+[_keyTextField setBackgroundColor:[UIColor clearColor]];//透明效果
+```
+### textFiled 边框颜色
+```objc
+_keyTextField.layer.borderColor = [UIColor whiteColor].CGColor;//边框颜色
+```
+### textField hint
+ios storyboard中有一个textField有一个placeHolder字段。
+
+
 ### ViewController change
 ```swift
         let vc = storyboard?.instantiateViewController(withIdentifier: "second")
@@ -27,3 +39,5 @@ test.secureTextEntry = YES;
 ```
 ### cocoapods 添加库
 [cocoapods](./cocoapods.md)
+
+
