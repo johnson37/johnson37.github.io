@@ -40,4 +40,8 @@ ios storyboard中有一个textField有一个placeHolder字段。
 ### cocoapods 添加库
 [cocoapods](./cocoapods.md)
 
+### Navigation Bar
+[navigation bar](./navigation.md)
+
+
 
