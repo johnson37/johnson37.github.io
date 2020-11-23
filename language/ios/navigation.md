@@ -23,3 +23,12 @@
 [self.presentingViewController dismissViewControllerAnimated: TRUE completiom:nil];
 ```
 
+## Navigation setting
+### 如何设置navigation bar 透明
+在DashBoard中添加如下代码
+```objc
+- (void)viewWillAppear:(BOOL)animated{
+	[self.navigationController.navigationBar setBackgroundImage:[[UIImage alloc] init] forBarMetrics:UIBarMetricsDefault];
+	[self.navigationController.navigationBar setShadowImage:[[UIImage alloc] init]];
+}
+```
