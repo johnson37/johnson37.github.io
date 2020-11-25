@@ -43,5 +43,16 @@ ios storyboard中有一个textField有一个placeHolder字段。
 ### Navigation Bar
 [navigation bar](./navigation.md)
 
+### 如何根据不同情况选择不同的启动页面
+AppDelegate.m 
+#### step 1. storyboard
+```objc
+UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+```
 
+#### step2 . choose ViewController and set ViewController to rootViewController
 
+```objc
+	FavorViewController * favorBoardViewController = [storyboard instantiateViewControllerWithIdentifier:@"FavorViewController"];
+	self.window.rootViewController = favorBoardViewController;
+```
