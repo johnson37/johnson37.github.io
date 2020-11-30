@@ -73,3 +73,10 @@ return cell;
 
 @end
 ```
+
+### tableView 如何设置行距
+如果知道行数，可以通过计算的方式，自动调整行高。
+```objc
+self.tableView.rowHeight = 44
+```
+
