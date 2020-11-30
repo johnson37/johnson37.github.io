@@ -79,4 +79,9 @@ return cell;
 - UITableViewCellStyleValue1：左边一个显示图片的imageView，左边一个主标题textLabel，右边一个副标题detailTextLabel，主标题字体比较黑。
 -  UITableViewCellStyleValue2：左边一个主标题textLabel字体偏小，挨着右边一个副标题detailTextLabel，字体大且加黑。
 
+### tableView 如何设置行距
+如果知道行数，可以通过计算的方式，自动调整行高。
+```objc
+self.tableView.rowHeight = 44
+```
 
