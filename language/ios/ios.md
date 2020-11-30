@@ -69,3 +69,10 @@ UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
 	FavorViewController * favorBoardViewController = [storyboard instantiateViewControllerWithIdentifier:@"FavorViewController"];
 	self.window.rootViewController = favorBoardViewController;
 ```
+
+## protocol and delegate
+protocol 等同于java中的interface
+
+我们一个新的类，可以继承不同的protocol，与此同时，我们需要在我们的类中添加对应的implementation，implementation就是delegate。
+
+一个protocol可能会定义很多方法，protocol的定义中设置了optional和required，optional的方法，我们可以根据情况不实现，但是required的方法是必须要实现的。
