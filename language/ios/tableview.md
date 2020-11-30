@@ -73,3 +73,10 @@ return cell;
 
 @end
 ```
+## tableViewCell 的类型
+- UITableViewCellStyleDefault: 左边一个image，一个title
+- UITableViewCellStyleSubtitle：左边一个image，一个title和一个副title
+- UITableViewCellStyleValue1：左边一个显示图片的imageView，左边一个主标题textLabel，右边一个副标题detailTextLabel，主标题字体比较黑。
+-  UITableViewCellStyleValue2：左边一个主标题textLabel字体偏小，挨着右边一个副标题detailTextLabel，字体大且加黑。
+
+
