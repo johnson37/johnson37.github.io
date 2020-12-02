@@ -77,11 +77,20 @@ return cell;
 - UITableViewCellStyleDefault: 左边一个image，一个title
 - UITableViewCellStyleSubtitle：左边一个image，一个title和一个副title
 - UITableViewCellStyleValue1：左边一个显示图片的imageView，左边一个主标题textLabel，右边一个副标题detailTextLabel，主标题字体比较黑。
--  UITableViewCellStyleValue2：左边一个主标题textLabel字体偏小，挨着右边一个副标题detailTextLabel，字体大且加黑。
+- UITableViewCellStyleValue2：左边一个主标题textLabel字体偏小，挨着右边一个副标题detailTextLabel，字体大且加黑。
+
+### UITableViewCellStyleDefault 设置title和image
+```objc
+cell.textLabel.text = @"test";
+cell.imageView.image = [UIImage imageNamed:@"background"];
+```
+
+### 定制化tableView
+![customer table view](https://www.appcoda.com/customize-table-view-cells-for-uitableview/)
+
 
 ### tableView 如何设置行距
 如果知道行数，可以通过计算的方式，自动调整行高。
 ```objc
 self.tableView.rowHeight = 44
 ```
-
