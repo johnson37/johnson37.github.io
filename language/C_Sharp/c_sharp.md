@@ -4,4 +4,4 @@
 
 ## WPF
 
-![wpf](./wpf_ui.md)
+- [wpf](./wpf_ui.md)
