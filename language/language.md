@@ -1,7 +1,7 @@
 # Language Study
 
 - [c](./c/c.md)
-- [c#](./C_Sharp/C_Sharp.md)
+- [c#](./C_Sharp/c_sharp.md)
 - [python](./python/python.md)
 - [html](./html/index.md)
 - [php](./php/index.md)
