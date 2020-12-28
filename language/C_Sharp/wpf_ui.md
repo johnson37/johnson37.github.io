@@ -1,8 +1,5 @@
 # WPF Note
 ## Column/Row Definition.
-```c
-
-```
 
 ## 如何查看当前使用C#的版本。
 ```
