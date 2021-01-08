@@ -85,3 +85,10 @@ protocol 等同于java中的interface
 
 ## alert
 [alert](./alert.md)
+
+## Different between viewDidLoad and viewDidAppear
+viewDidLoad is called exactly once, when the view controller is first loaded into memory. This is where you want to instantiate any instance variables and build any views that live for the entire lifecycle of this view controller. However, the view is usually not yet visible at this point.
+viewDidAppear is called when the view is actually visible, and can be called multiple times during the lifecycle of a View Controller (for instance, when a Modal View Controller is dismissed and the view becomes visible again). This is where you want to perform any layout actions or do any drawing in the UI - for example, presenting a modal view controller. However, anything you do here should be repeatable. It's best not to retain things here, or else you'll get memory leaks if you don't release them when the view disappears.
+
+## variable property
+!(variable property)[https://medium.com/bitmountn/attributes-of-property-nonatomic-retain-strong-weak-etc-b7ea93a0f772]
