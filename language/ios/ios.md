@@ -96,3 +96,23 @@ viewDidAppear is called when the view is actually visible, and can be called mul
 ## selector
 @selector是指查找本类以及本类子类中的方法
 @selector(method)时，这个method只有在该方法存在参数时需要 ":"，如果该方法不需要参数就不需要加这个冒号。
+
+```objc
+@implementation ClassForSelectors
+- (void) fooNoInputs {
+    NSLog(@"Does nothing");
+}
+- (void) fooOneIput:(NSString*) first {
+    NSLog(@"Logs %@", first);
+}
+- (void) fooFirstInput:(NSString*) first secondInput:(NSString*) second {
+    NSLog(@"Logs %@ then %@", first, second);
+}
+- (void) performMethodsViaSelectors {
+    [self performSelector:@selector(fooNoInputs)];
+    [self performSelector:@selector(fooOneInput:) withObject:@"first"];
+    [self performSelector:@selector(fooFirstInput:secondInput:) withObject:@"first" withObject:@"second"];
+}
+@end
+
+```
