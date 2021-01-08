@@ -92,3 +92,7 @@ viewDidAppear is called when the view is actually visible, and can be called mul
 
 ## variable property
 !(variable property)[https://medium.com/bitmountn/attributes-of-property-nonatomic-retain-strong-weak-etc-b7ea93a0f772]
+
+## selector
+@selector是指查找本类以及本类子类中的方法
+@selector(method)时，这个method只有在该方法存在参数时需要 ":"，如果该方法不需要参数就不需要加这个冒号。
