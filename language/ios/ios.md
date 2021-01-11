@@ -116,3 +116,6 @@ viewDidAppear is called when the view is actually visible, and can be called mul
 @end
 
 ```
+
+## UIControl state
+[UIControl state](./uiControlState.md)
