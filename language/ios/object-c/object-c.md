@@ -41,3 +41,20 @@ property 声明变量时，会生成setter，getter和一个带——前缀的�
 
 ### block 函数指针
 
+#### Definition
+```objc
+<return type> (^blockname)(list of arguments) = ^(arguments){body;};
+```
+
+```objc
+- (NSURLSessionDataTask *)dataTaskWithURL:(NSURL *)url 
+                        completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completionHandler;
+```
+
+```objc
+NSURLSessionDataTask *dataTask = [session dataTaskWithURL:[NSURL URLWithString:@"https://itunes.apple.com/search?term=apple&media=software"] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        NSLog(@"%@",json);
+    }];
+```
+
