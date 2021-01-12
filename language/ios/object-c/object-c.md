@@ -39,5 +39,5 @@ Object-c:
 ### xiahuaxian
 property 声明变量时，会生成setter，getter和一个带——前缀的变量。
 
-### Null passed to a callee that requires a non-null argument
+### block 函数指针
 
