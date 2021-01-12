@@ -58,3 +58,6 @@ NSURLSessionDataTask *dataTask = [session dataTaskWithURL:[NSURL URLWithString:@
     }];
 ```
 
+
+### delegate
+![delegate](https://www.runoob.com/ios/ios-delegates.html)
