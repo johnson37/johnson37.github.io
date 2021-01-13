@@ -127,3 +127,7 @@ viewDidAppear is called when the view is actually visible, and can be called mul
 [UIControl state](./uiControlState.md)
 
 ## Memory Management
+
+
+## Xcode Flag
+![xcode flag](./xcode_flag.md)
