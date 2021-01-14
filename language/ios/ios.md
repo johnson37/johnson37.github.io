@@ -30,6 +30,7 @@ ios storyboard中有一个textField有一个placeHolder字段。
 textField 根据输入的内容的不同，可以在attribute中选择不同的键盘类型。
 
 #### textField 弹出键盘的同时，如何将整个界面往上移动
+![textField Keyboard](./textField_Keyboard.md)
 
 #### 获得控件相对屏幕的位置
 ```objc
@@ -131,3 +132,6 @@ viewDidAppear is called when the view is actually visible, and can be called mul
 
 ## Xcode Flag
 ![xcode flag](./xcode_flag.md)
+
+## MISC
+![misc](./misc.md)
