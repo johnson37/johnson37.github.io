@@ -7,3 +7,5 @@ pip install pyinstaller
 
 ## Generate Exe
 pyinstaller -F -w entrypoint.py
+
+
