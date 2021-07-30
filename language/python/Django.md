@@ -1,5 +1,7 @@
 # Django Web Development
+
 ## Environment Setup
+
 ### Differenet Django need different Python version requirment
 - Django 1.8  **Python 2.7, 3.2 , 3.3, 3.4, 3.5**
 - Django 1.9  **Python 2.7, 3.4, 3.5**
@@ -8,16 +10,41 @@
 
 
 ### Setup Environment
-- python setup
-- Install python-setuptools **python setuptool.py install**
-- Install Django **python setup.py install** 
+- 安装pip
+- Install Django **pip install django** 
 
 ## The first Django APP
-**Here, my Environment is Django 1.9, Python 3.4**
-
 - django-admin startproject HelloWorld
 - Open settings.py, ALLOWED_HOSTS = ['*']
 - python manage.py runserver 0.0.0.0:8000
+
+## Django 工作原理
+![Django 工作原理](./django_whole_picture.PNG)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Some Tips
 ### Paint the Web
