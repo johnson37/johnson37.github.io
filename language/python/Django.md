@@ -21,7 +21,72 @@
 ## Django 工作原理
 ![Django 工作原理](./django_whole_picture.PNG)
 
+### Django 原理
+浏览器输入的网页网址会到URL控制器，URL控制器解析网页网址，调用对应的view，view首先从Model获取对应的数据，将对应的数据传递给需要渲染的模板，
+得到数据的模板会生成真正的html，并传递给浏览器。
 
+## Django 配置面
+
+Template:
+![Template](./template.PNG)
+
+Static Resource Location: (include css/js/images)
+![Static Resource Location](./static_resource.PNG)
+
+## 整体代码结构图
+![Whole Picture in Code structure](./code_picture.PNG)
+
+## Python url如何与view进行关联
+```python
+urlpatterns = [
+    # Home Page URLS
+    re_path(r'^$', home_page.index),
+    re_path(r'^About', home_page.about),
+    re_path(r'^Contact', home_page.contact),
+    re_path(r'^Home', home_page.home),
+    re_path(r'^login', home_page.login),
+    re_path(r'^product_price', home_page.product_price),
+    re_path(r'^material_price', home_page.material_price),
+    re_path(r'^my_info', home_page.my_info),
+    re_path(r'^register', home_page.register),
+    re_path(r'^save_info', home_page.save_info),
+]
+```
+
+## django view 如何往模板传递数据
+
+view通过字典的方式将要传递的参数放到render的最后一个参数中。
+```python
+def save_info(request):
+    context = {}
+    username = request.session.get('username', 'anybody')
+    user = User.byusername(username)
+    if request.POST:
+        update_name = request.POST['name']
+        update_email = request.POST['email']
+        update_password = request.POST['password']
+        user.name = update_name
+        user.pwd = update_password
+        user.email_address = update_email
+        db_session.commit()
+
+        context['name'] = update_name
+        context['password'] = update_password
+        context['email_address'] = update_email
+    return render(request, './home_page/my_info.html', context)
+```
+相应的，在对应的渲染模板中，需要使用参数的地方，使用'{{name}}'的方式进行包裹。
+**Note: 如果传递的参数是不带空格的，则是不需要外面加引号的，否则需要引号**
+
+## django如何记录当前的登录用户
+当用户login的时候：
+request.session['username'] = context['name']
+
+当需要读取当前用户信息的时候：
+username = request.session.get('username', 'anybody')
+
+第一次运行可能会报错：
+**python manage.py migrate**
 
 
 
