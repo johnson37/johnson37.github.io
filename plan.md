@@ -4,16 +4,21 @@
 
 ### English Listening
 
-### Python Project
-
 ### Economic Plan
-- 定期
-- 活期
-- 基金
+- 7-10年国债
+- ETF
+- 美国/印度/越南基金
+- stock (20-30)
 
-## Work Plan
+## Technical Plan
 
-### U-Boot
-### Open-WRT
-### Net Stack
-### Open Course
+### Work Part
+
+- PON Protocol
+- Net Protocols
+- Linux Network Driver Part/ Schedule/ Memory Management
+
+### Personal Part
+
+- Full Stack Web Developer (Python + Django + Javascript/TypeScript)
+- AI Mechnical Learning
