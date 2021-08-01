@@ -88,7 +88,13 @@ username = request.session.get('username', 'anybody')
 第一次运行可能会报错：
 **python manage.py migrate**
 
+## django 如何做延时跳转网页。
+依靠前端js，window.location.href = 'http://127.0.0.1:8000/';
 
+## 前端表单跳转之前如何做检查
+```
+          <form method="POST" action="http://127.0.0.1:8000/login" class="u-clearfix u-form-spacing-44 u-form-vertical u-inner-form" source="custom" name="form" style="padding: 50px;" onsubmit="return check_form()">
+```
 
 
 
