@@ -12,6 +12,8 @@
 ### Setup Environment
 - 安装pip
 - Install Django **pip install django** 
+- 查看django的版本 **python -m django --version**
+- 卸载django **pip uninstall django**
 
 ## The first Django APP
 - django-admin startproject HelloWorld
@@ -92,10 +94,10 @@ username = request.session.get('username', 'anybody')
 依靠前端js，window.location.href = 'http://127.0.0.1:8000/';
 
 ## 前端表单跳转之前如何做检查
-```
+```html
           <form method="POST" action="http://127.0.0.1:8000/login" class="u-clearfix u-form-spacing-44 u-form-vertical u-inner-form" source="custom" name="form" style="padding: 50px;" onsubmit="return check_form()">
 ```
-## todO
+## 
 
 
 
