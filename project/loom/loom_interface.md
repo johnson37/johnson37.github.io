@@ -21,6 +21,6 @@ http://localhost:4200/api/secure/eln/module/experiments/rxns_by_notebook
 
 http://localhost:4200/api/secure/eln/module/experiments/chem_drawing/update_chem_drawing
 
-参数：rxn_id, add_type, product_id
+参数：rxn_id, add_type, rxn_product_id
 ```
 

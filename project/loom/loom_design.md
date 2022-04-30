@@ -33,7 +33,7 @@ CREATE TABLE app.chemical_entry_follow_link (
 );
 ```
 
-case 5: Clone Rxn的时候需要把对应的连接clone过去？
+case 5: Clone Rxn的时候需要把对应的连接clone过去, 连接以及数量都不拿过去。连接默认不会带过来，数量需要清除一下。
 
 case 6: 添加amount 和 unit， 修改分子式的时候，允许修改amount和unit吗？
 
